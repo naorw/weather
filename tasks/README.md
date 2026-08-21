@@ -1,39 +1,46 @@
 # Task Execution
 
-Current phase: **none authorized**
+Current phase: **none authorized after Native Phase 0**
 
-Native Android Phase 0 is defined in `PHASES.md` but is **not** authorized. Do not create `tasks/phase-0.md`. Do not begin native implementation.
+Native Phase 0 — Android Foundation is **accepted** (2026-08-21). Evidence: `tasks/phase-0.md`.
 
-Historical `tasks/phase-0.md` … `tasks/phase-3.md` are PWA prototype evidence only.
+Do not create `tasks/phase-1.md`. Do not begin Native Phase 1.
+
+Historical `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md` are PWA prototype evidence only. Do not execute them.
 
 1. Read `PROJECT.md`.
 2. Read `PHASES.md`.
 3. Read `TASKS.md`.
 4. Read only the currently authorized phase task file, if any.
 5. If none is authorized, STOP.
-6. Execute the first incomplete task of the authorized phase only.
-7. Do not work outside the current phase.
-8. Discoveries outside scope go to **Deferred Work** in the current phase task file.
-9. A completed task does not imply a completed phase.
-10. Phase completion requires satisfying the current phase acceptance criteria and handoff contract in `PHASES.md`.
-11. Record decisions under `decisions/` only when future work must respect them.
-12. Record durable technical knowledge under `docs/` only when future work needs it.
-13. Keep the current phase task file updated with implementation evidence, tests, files changed, known limitations, deferred work, and decisions.
-14. Stop at phase handoff.
-15. Never create or begin the next phase task file automatically.
+6. Do not work outside the current phase.
+7. Discoveries outside scope go to **Deferred Work** in the current phase task file.
+8. A completed task does not imply a completed phase.
+9. Phase completion requires satisfying the current phase acceptance criteria and handoff contract in `PHASES.md`.
+10. Record decisions under `decisions/` only when future work must respect them.
+11. Record durable technical knowledge under `docs/` only when future work needs it.
+12. Keep the current phase task file updated with implementation evidence, tests, files changed, known limitations, deferred work, and decisions.
+13. Stop at phase handoff.
+14. Never create or begin the next phase task file automatically.
 
 ## Current Execution
 
-No native phase is authorized.
+No native phase is authorized after Native Phase 0 acceptance.
+
+Historical native task files:
+
+* `tasks/phase-0.md`
 
 Historical PWA task files (do not execute):
 
-* `tasks/phase-0.md`
-* `tasks/phase-1.md`
-* `tasks/phase-2.md`
-* `tasks/phase-3.md`
+* `tasks/pwa/phase-0.md`
+* `tasks/pwa/phase-1.md`
+* `tasks/pwa/phase-2.md`
+* `tasks/pwa/phase-3.md`
 
 Do not reopen PWA work.
+
+Do not reopen completed native phase work unless the current authorized phase explicitly requires a compatible change.
 
 ## Source of Truth
 
@@ -60,11 +67,33 @@ If forgetting information could cause a future agent to make a wrong implementat
 
 Otherwise, don't.
 
+## Phase 0 Boundaries
+
+Phase 0 owns:
+
+* Kotlin + Jetpack Compose application
+* APK build/install/debug workflow
+* application identity
+* static Today design-language baseline
+* navigation shell
+* local persistence proof
+* runtime API-key configuration (no network)
+
+Phase 0 must not implement:
+
+* OpenWeather network calls
+* geolocation
+* city search / saved cities
+* weather cache
+* radar/maps
+* notifications / widgets / WorkManager
+* accounts / analytics / AI / cloud sync
+
 ## After Phase Authorization
 
-Once the owner/planner explicitly authorizes Native Phase 0:
+Once the owner/planner explicitly authorizes Native Phase 1:
 
-* create only `tasks/phase-0.md`
+* create only `tasks/phase-1.md`
 * update `TASKS.md` to name that phase
 * update the current phase listed in this file
 

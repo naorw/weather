@@ -2,7 +2,7 @@
 
 Graphite instrumentation. Not a lifestyle dashboard. Not Material card chrome. Not neon.
 
-Token names below are the durable visual contract. Native Compose should reproduce these values; CSS custom properties were the PWA implementation and are not required.
+Token names below are the durable visual contract. Native Compose maps them in `org.radilabs.weather.ui.theme.Wx`.
 
 ## Surfaces
 

@@ -6,9 +6,11 @@ A complete PWA prototype (Vite, TypeScript, service worker, IndexedDB) was built
 
 Historical evidence still in the tree:
 
-- `tasks/phase-0.md` … `tasks/phase-3.md`
-- `docs/handoffs/phase-0.md` … `docs/handoffs/phase-3.md`
+- `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md`
+- `docs/handoffs/pwa-phase-0.md` plus `docs/handoffs/phase-1.md` … `phase-3.md` (PWA)
 - `decisions/0001` … `0016` (several superseded for implementation path)
+
+Native Phase 0 uses `tasks/phase-0.md` and `docs/handoffs/phase-0.md`.
 
 Recommended tag (create only with owner authorization):
 

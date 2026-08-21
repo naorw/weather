@@ -2,29 +2,41 @@
 
 v1 is a native Android application. The key is configured and stored **locally on the device at runtime**.
 
-Do not bake a reusable key into the APK. Do not commit keys. Do not build a backend to hide the key for the personal app.
-
-The PWA used `VITE_OPENWEATHER_API_KEY` inlined into JavaScript. That strategy is superseded by `decisions/0017-native-android-platform.md` (see historical `0008`).
+See `decisions/0018-runtime-api-key-storage.md`.
 
 ## Strategy
 
-Native Phase 0 must prove that a key can be written and read locally without a network call.
+Settings → OpenWeather key:
 
-Native Phase 1 may use that stored key for OpenWeather HTTPS requests.
+- enter (password field)
+- save
+- replace (save again)
+- remove
+- status: `Not configured` or `Configured · ••••` plus last four characters
 
-Exact Android storage (for example encrypted preferences / DataStore) is chosen in the authorized phase that implements it.
+The full key is not shown after save.
+
+`ApiKeyStore.read()` returns the plaintext for future Phase 1 use. Phase 0 does not call OpenWeather.
+
+## Honesty
+
+- This prevents bundling/publishing the user's key in the APK or Git.
+- A key stored in app-private `SharedPreferences` on a user-controlled Android device is **not** cryptographically unknowable to the device owner (especially with root / backup tools).
+- EncryptedSharedPreferences was skipped as ceremony for a personal GrapheneOS app.
+- No backend is involved.
 
 ## Where the key must not exist
 
 | Place | Present? |
 | --- | --- |
 | Git | No |
-| Source / resources in the repo | No |
-| `tasks/`, `docs/`, README, commit messages | No |
-| Logs / error UI | No |
+| Source / resources | No |
+| `BuildConfig` / Gradle properties | No |
+| `tasks/`, `docs/` examples, README, commit messages | No |
+| Logs / error UI | No (masked status only) |
 
 ## Rotation
 
 1. Generate a new key in the OpenWeather account.
-2. Update the locally stored value on the device.
+2. Settings → paste → Save.
 3. Disable the old key.

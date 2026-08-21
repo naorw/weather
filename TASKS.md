@@ -9,30 +9,36 @@ Current structure:
 ```text
 tasks/
 ├── README.md
-├── phase-0.md   # historical PWA prototype
-├── phase-1.md   # historical PWA prototype
-├── phase-2.md   # historical PWA prototype
-└── phase-3.md   # historical PWA prototype (stopped / superseded)
+├── phase-0.md          # Native Phase 0 — Android Foundation (accepted)
+└── pwa/
+    ├── phase-0.md
+    ├── phase-1.md
+    ├── phase-2.md
+    └── phase-3.md
 ```
 
-Current authorized phase:
+Last completed native phase:
 
-**None.**
+**Native Phase 0 — Android Foundation** — accepted 2026-08-21 (`tasks/phase-0.md`).
 
-No native Android implementation phase is authorized.
+No later native phase is authorized. Do not create or execute `tasks/phase-1.md` until Native Phase 1 is explicitly opened.
 
-Do **not** create native `tasks/phase-0.md` until the owner/planner explicitly authorizes Native Phase 0 — Android Foundation.
+Do not begin Native Phase 1.
 
-Do not begin native implementation.
+## Completed native phases
+
+* **Native Phase 0 — Android Foundation** — accepted 2026-08-21 (`tasks/phase-0.md`)
+
+Completed phase task files are historical execution evidence.
 
 ## Historical PWA prototype
 
 These files are execution evidence from the abandoned PWA platform. They are not native Android phases.
 
-* **PWA Phase 0 — PWA Foundation** — accepted 2026-08-21 (`tasks/phase-0.md`)
-* **PWA Phase 1 — Weather Data** — accepted 2026-08-21 (`tasks/phase-1.md`)
-* **PWA Phase 2 — Weather Instrument** — accepted 2026-08-21 (`tasks/phase-2.md`)
-* **PWA Phase 3 — Locations and Offline** — stopped / superseded by native Android (`tasks/phase-3.md`)
+* **PWA Phase 0 — PWA Foundation** — accepted 2026-08-21 (`tasks/pwa/phase-0.md`)
+* **PWA Phase 1 — Weather Data** — accepted 2026-08-21 (`tasks/pwa/phase-1.md`)
+* **PWA Phase 2 — Weather Instrument** — accepted 2026-08-21 (`tasks/pwa/phase-2.md`)
+* **PWA Phase 3 — Locations and Offline** — stopped / superseded by native Android (`tasks/pwa/phase-3.md`)
 
 Do not reopen PWA work. Do not execute these files.
 
@@ -42,8 +48,9 @@ The product definition and factory rules live in `PROJECT.md`.
 
 Do not create or execute tasks for later phases in advance.
 
-When Native Phase 0 is explicitly authorized:
+When Native Phase 1 is explicitly authorized:
 
-* create only `tasks/phase-0.md` for the native contract in `PHASES.md`
-* update this file to name that authorized phase
-* do not alter historical PWA task files except to correct factual errors
+* preserve `tasks/phase-0.md` as historical execution evidence
+* update this file to point to the newly authorized phase
+* create only that phase's detailed task file
+* do not alter completed phase history except to correct factual errors

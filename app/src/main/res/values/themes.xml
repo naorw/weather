@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.Weather" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@color/wx_base</item>
+        <item name="android:navigationBarColor">@color/wx_base</item>
+        <item name="android:windowBackground">@color/wx_base</item>
+        <item name="android:colorBackground">@color/wx_base</item>
+    </style>
+</resources>

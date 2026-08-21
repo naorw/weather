@@ -26,17 +26,16 @@ Primary screens: **Today**, **Radar**, **Cities**, **Settings**.
 
 ## Status
 
-No native implementation phase is authorized.
+Native **Phase 0 — Android Foundation** is **accepted** (2026-08-21). Phase 1 is not authorized.
 
-Native Phase 0 — Android Foundation must be opened explicitly by the owner/planner. Do not create `tasks/phase-0.md` until then.
-
-See `PROJECT.md`, `PHASES.md`, and `docs/development.md`.
+See `PROJECT.md`, `PHASES.md`, `tasks/phase-0.md`, and `docs/development.md`.
 
 ## Layout
 
 ```
+app/           Kotlin + Compose application
 decisions/     architectural and product decisions
 docs/          durable technical notes and phase handoffs
 icons/         application mark
-tasks/         authorized phase tasks (none yet); historical PWA files remain
+tasks/         authorized phase tasks; historical PWA under tasks/pwa/
 ```

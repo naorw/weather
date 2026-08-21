@@ -1,308 +1,185 @@
-# Phase 0 — PWA Foundation
+# Native Phase 0 — Android Foundation
 
 ## Status
 
-**Accepted** — 2026-08-21 (PWA prototype).
+**Accepted** — 2026-08-21.
 
-This file is historical PWA evidence. Native work is not this phase. Do not execute this file.
+Owner validated on Pixel / GrapheneOS:
 
-Owner verified locally and on a Pixel phone. Phase 0 handoff is closed.
+* APK installs
+* app launches independently
+* Today visual direction accepted
+* navigation works
+* API key save works
+* configured state survives restart
+* API key removal works
 
-Do not begin Phase 1 until that phase is explicitly authorized.
+Do not begin Native Phase 1 until that phase is explicitly authorized.
 
 ---
 
 ## Objective
 
-Create the smallest working Weather PWA and establish the development, build, install, storage, and visual-system foundation required by later phases.
+Create the smallest working native Weather application and establish build, install, and debugging workflow.
 
-No real weather-provider integration belongs in this phase.
+The application must already establish the intended visual direction without implementing real weather functionality.
 
----
+The primary outcome is:
 
-## Required Decisions
+**Kotlin + Compose APK + graphite Today shell + local persistence + runtime API-key storage**
 
-Recorded under `decisions/`:
-
-* `0001-application-identity.md`
-* `0002-frontend-toolchain.md`
-* `0003-indexeddb-access.md`
-* `0004-pwa-service-worker.md`
-* `0005-font-strategy.md`
-* `0006-design-token-structure.md`
+Derived from the immutable contract in `PHASES.md` (Native Phase 0). That contract is not modified here.
 
 ---
 
-## Task 0.1 — Bootstrap the Application
+## Phase Constraints
 
-Done.
-
-Selected stack:
-
-* Vite 8
-* TypeScript (vanilla, no UI framework)
-* Vitest + happy-dom
-* ESLint + typescript-eslint
-* `vite-plugin-pwa` for the service worker (build only)
-
-Commands:
-
-* install: `npm install`
-* development: `npm run dev`
-* production build: `npm run build`
-* preview: `npm run preview`
-* test: `npm test`
-* lint: `npm run lint`
-
-Requires Node.js 22+.
-
-### Evidence
-
-* `package.json`, `vite.config.ts`, `tsconfig.json`, `eslint.config.js`, `vitest.config.ts`, `index.html`
-* `npm test` — 12 passed
-* `npm run lint` — clean
-* `npm run build` — success; Workbox precache 13 entries
+* Application ID: `org.radilabs.weather` (`decisions/0001-application-identity.md`)
+* App name: `Weather`
+* Version: `0.0.0` (versionCode `1`)
+* Kotlin + Jetpack Compose
+* Single `app` module
+* GrapheneOS / Pixel first
+* No WebView, Capacitor, TWA, Flutter, RN, KMP, Hilt
+* No OpenWeather network calls
 
 ---
 
-## Task 0.2 — Establish Application Identity
+## Task 0.1 — Inspect contract
 
-Done.
+Read `PROJECT.md`, `PHASES.md`, `TASKS.md`, `tasks/README.md`, `decisions/0017`, identity/design/credential docs.
 
-* name: Weather
-* short name: Weather
-* id: `org.radilabs.weather`
-* description: A weather instrument for Android. Current conditions, forecast, and atmospheric detail.
-* version: `0.0.0`
-* theme/background: `#14171b`
-* icons: `public/icons/weather-192.png`, `weather-512.png`, `weather-512-maskable.png`; SVG source `icons/weather.svg`
+Confirm no blocking contradiction with Native Phase 0.
 
-Decision: `decisions/0001-application-identity.md`
+PWA task files live under `tasks/pwa/` so this file can occupy `tasks/phase-0.md` without deleting history.
 
 ---
 
-## Task 0.3 — PWA Foundation
+## Task 0.2 — Android project
 
-Done (artifacts). Device install still for the owner.
+Create a minimal Gradle Android project:
 
-* `public/manifest.webmanifest` — `display: standalone`, `start_url: ./`
-* viewport: `width=device-width, initial-scale=1, viewport-fit=cover`
-* Workbox `generateSW` via `vite-plugin-pwa`
-* `dist/sw.js` generated on build
-* application-shell precache only (no weather payloads)
-
----
-
-## Task 0.4 — Main Application Shell
-
-Done.
-
-Hash routes: `#/today` `#/radar` `#/cities` `#/settings`
-
-Bottom nav, `aria-current="page"` on the active destination.
-
-Radar / Cities / Settings are placeholders. Settings includes the IndexedDB probe only.
+* Kotlin
+* Jetpack Compose
+* current stable AGP compatible with a user-local JDK 21
+* debug and release APK tasks
+* release APK uses the debug keystore until a production keystore exists (document this)
 
 ---
 
-## Task 0.5 — Establish the Design System
+## Task 0.3 — Identity, icons, shell
 
-Done.
-
-Tokens: `src/styles/tokens.css`
-
-Human-readable rules: `docs/design-system.md`
-
-Decision: `decisions/0006-design-token-structure.md`
+* Package `org.radilabs.weather`
+* Bottom navigation: Today, Radar, Cities, Settings
+* Radar and Cities are placeholders
+* Settings holds API-key configuration
+* Today is the only real screen
 
 ---
 
-## Task 0.6 — Static Today Screen
+## Task 0.4 — Design tokens + static Today
 
-Done.
+Reproduce `docs/design-system.md` in Compose.
 
-Fake Stockholm snapshot in `src/fake-today.ts` (8 hourly points, **5** days — not hard-coded to 7).
+Static Stockholm sample data (no network, no fake async provider).
 
-Hierarchy: dominant hero → horizontal hours → day rows with range bar → telemetry list (not equal cards).
-
----
-
-## Task 0.7 — Weather Glyph Foundation
-
-Done.
-
-Monochrome stroke SVGs in `src/glyphs.ts`: clear, partly-cloudy, overcast, drizzle, rain.
+Show: location, temperature, condition, high/low, feels-like, 3-hour strip, multi-day rows with range bar, wind, precipitation, humidity, pressure, visibility, timestamp/metadata.
 
 ---
 
-## Task 0.8 — Local Structured Storage Proof
+## Task 0.5 — Persistence + API key
 
-Done.
+App-private local storage for the OpenWeather key.
 
-`src/storage.ts` — native IndexedDB, db `org.radilabs.weather.phase0`, store `kv`.
+Settings: enter, save, replace, remove, masked configured state.
 
-Automated CRUD + reset tests in `tests/storage.test.ts`.
+Do not log the key. Do not bundle it. Do not use BuildConfig or Gradle properties.
 
-Settings UI: Run storage probe / Reset proof store.
+Persistence must survive process restart.
 
-Decision: `decisions/0003-indexeddb-access.md`
-
----
-
-## Task 0.9 — Responsive and Android Viewport Validation
-
-Done.
-
-CSS: `overflow-x: hidden` on page; hourly strip `overflow-x: auto`; `--touch-min: 48px`; shell `max-width: 40rem`.
-
-Layout uses fluid type (`clamp`) and CSS grid that fits 360–412px.
-
-Owner confirmed usable layout locally and on a Pixel phone (2026-08-21).
+Do not implement weather cache or saved cities.
 
 ---
 
-## Task 0.10 — Accessibility Baseline
+## Task 0.6 — Tests
 
-Done as a baseline, not a certification.
+Useful tests only:
 
-* `lang="en"`, `nav aria-label="Primary"`
-* Today location is `h1`; other screens have `h1`
-* Buttons have visible text
-* Focus-visible outline
-* Precip shown as numbers, not color alone
-* Tabular numbers; labels not color-only
-
-Increased system text size was not measured on a physical device.
+* API-key save / replace / remove / configured state
+* persistence via the store abstraction
+* no credential strings in source
 
 ---
 
-## Task 0.11 — Developer Documentation
+## Task 0.7 — Docs, decisions, handoff
 
-Done.
-
-* `docs/development.md`
-* `docs/design-system.md`
-* `README.md` quick start
-
----
-
-## Task 0.12 — Phase 0 Verification
-
-### Acceptance criteria (`PHASES.md`)
-
-| # | Criterion | Result |
-| --- | --- | --- |
-| 1 | Application runs locally | `npm run dev` configured; modules compile |
-| 2 | Production build succeeds | `npm run build` passed 2026-08-20 |
-| 3 | Installable PWA | Manifest + 192/512 icons + SW generated. Owner tested on Pixel (2026-08-21). |
-| 4 | Standalone launch | Manifest `display: standalone`. Covered by owner Pixel test. |
-| 5 | Bottom navigation | Implemented; unit tests for routes |
-| 6 | Today visual direction | Static instrument layout + tokens |
-| 7 | Android portrait sizes | Owner confirmed on Pixel (2026-08-21) |
-| 8 | IndexedDB proof | Tests passed |
-| 9 | Offline app shell after first load | SW precaches shell. Covered by owner Pixel test. |
-| 10 | Build/run/debug docs | `docs/development.md` |
-| 11 | No real weather-provider integration | `tests/scope.test.ts` passed; no OpenWeather in `src/` |
-| 12 | No later-phase functionality | No geolocation, city search, radar map, weather cache, AI, analytics |
-
-### Explicit absences checked
-
-* OpenWeather network calls — none
-* API credentials — none
-* geolocation — none
-* city search / saved cities — none
-* real weather data — fake snapshot only
-* radar/map implementation — copy placeholder only
-* weather-data offline cache — none
-* AI — none
-* analytics — none
+* `docs/development.md` — build/install/adb
+* `docs/android-project.md` — structure
+* `docs/design-system.md` — Compose token mapping
+* `docs/credentials.md` — storage choice and honesty
+* Decision only if future phases must respect a storage/toolchain choice
+* `docs/handoffs/phase-0.md` — implemented / awaiting owner acceptance
 
 ---
 
-# Expected Repository Artifacts
+## Explicit Exclusions
 
-Present:
-
-* `src/` application source
-* `public/manifest.webmanifest`
-* generated `dist/sw.js` (build)
-* `public/icons/` and `icons/`
-* `src/styles/tokens.css`
-* Today + placeholder screens
-* IndexedDB proof
-* `tests/`
-* `docs/development.md`, `docs/design-system.md`, `docs/handoffs/phase-0.md`
-* `decisions/0001`–`0006`
+Same as `PHASES.md` Phase 0 plus: real forecasts, geolocation, city search, saved cities, weather cache, radar/maps, notifications, widgets, WorkManager, accounts, analytics, AI, cloud sync.
 
 ---
-
-# Handoff Notes
 
 ## Files Changed
 
-* `package.json`, `package-lock.json`, `vite.config.ts`, `vitest.config.ts`, `tsconfig.json`, `eslint.config.js`, `index.html`, `.gitignore`
-* `src/**` application modules and styles
-* `public/manifest.webmanifest`, `public/icons/*`
-* `icons/weather.svg` and PNG copies
-* `tests/**`
-* `docs/development.md`, `docs/design-system.md`, `docs/handoffs/phase-0.md`
-* `docs/handoffs/.gitkeep` retained
-* `decisions/0001`–`0006`
-* `tasks/README.md`, `tasks/phase-0.md`, `README.md`
+Created:
+
+* `app/` Kotlin + Compose Weather application and unit tests
+* Gradle wrapper (`gradlew`, `gradle/wrapper/`)
+* `decisions/0018-runtime-api-key-storage.md`
+* `docs/android-project.md`
+* `docs/handoffs/phase-0.md` — accepted 2026-08-21
+
+Modified:
+
+* `TASKS.md`, `tasks/README.md`, `README.md`, `docs/development.md`, `docs/credentials.md`, `docs/design-system.md`
 
 ## Tests Performed
 
-```sh
-npm test     # 5 files, 12 tests, all passed
-npm run lint # passed
-npm run build # passed; PWA generateSW, 13 precache entries
-```
-
-Owner manual checks (2026-08-21): local run and Pixel phone — accepted.
+* `./gradlew :app:testDebugUnitTest` — pass (`ApiKeyStore`, `Dest`)
+* `./gradlew :app:assembleDebug` — `app/build/outputs/apk/debug/app-debug.apk`
+* `./gradlew :app:assembleRelease` — `app/build/outputs/apk/release/app-release.apk` (debug-signed)
+* APK permission dump: no `INTERNET`
+* APK string dump: no bundled OpenWeather key
+* Confirmed no `package.json` / PWA `src/` / `tasks/phase-1.md`
 
 ## Results
 
-Automated Phase 0 checks: **pass**.
+Automated unit tests and both APK build paths: pass.
 
-Owner device check: **pass** (Pixel, 2026-08-21).
+Owner device checks: **pass** (Pixel / GrapheneOS, 2026-08-21).
 
-Phase 0: **accepted**.
+---
 
 ## Known Limitations
 
-* Weather values are static fiction (Stockholm).
-* Radar, cities, and settings have no product behavior beyond the storage probe.
-* No webfont; appearance depends on the device UI typeface.
-* `npm run dev` does not exercise the production service worker.
-* Icon mark is a simple geometric glyph, not a finished brand lockup.
-* Warning token exists but is unused in the static UI.
-* Duplicate icon files live in both `icons/` and `public/icons/` so Vite can serve them without extra copy steps.
+* User-local JDK 21 + Android SDK; `local.properties` is gitignored
+* Release APK is debug-signed
+* APK size is large without minify
+* No emulator/device in this implementation environment
 
 ## Deferred Work
 
-* OpenWeather integration and credential strategy — Phase 1
-* Real Today design with live data — Phase 2
-* Saved cities, geolocation, weather cache, stale-state — Phase 3
-* Radar/map layers — Phase 4
-* Production polish, icon set finish, font evaluation on GrapheneOS — Phase 5
-* Hash routing vs History API if a host requires cleaner URLs
-* Whether to replace vanilla DOM rendering if UI complexity grows
+* Production signing keystore
+* Native Phase 1 OpenWeather integration
+* Radar, cities, cache, location (later native phases)
 
 ## Decisions Created
 
-* `decisions/0001-application-identity.md`
-* `decisions/0002-frontend-toolchain.md`
-* `decisions/0003-indexeddb-access.md`
-* `decisions/0004-pwa-service-worker.md`
-* `decisions/0005-font-strategy.md`
-* `decisions/0006-design-token-structure.md`
+* `0018` runtime API-key storage (app-private SharedPreferences)
 
 ---
 
 # Completion Rule
 
-Phase 0 is complete only when the Phase 0 acceptance criteria and handoff contract in `PHASES.md` are satisfied.
+Native Phase 0 is accepted.
 
-Phase 0 is accepted.
-
-**STOP. Do not begin Phase 1 until it is explicitly authorized.**
+**STOP. Do not begin Phase 1 until it is explicitly authorized. Do not create `tasks/phase-1.md`.**

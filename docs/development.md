@@ -1,33 +1,109 @@
 # Development
 
-Weather v1 is a **native Android** application (Kotlin, Jetpack Compose). Native source is not in the tree until Native Phase 0 is authorized.
+Weather v1 is a native Android application (Kotlin, Jetpack Compose).
 
-A PWA prototype exists in Git history only. Do not revive Vite, service workers, or a WebView wrapper.
+The PWA prototype is in Git history only. Do not revive it.
 
-## Recommended history marker
+## Prerequisites
 
-If a tag is created later (owner authorization required):
+- JDK 21 (this machine: `$HOME/.local/jdk-21`)
+- Android SDK with platform 35 and build-tools 35.0.0 (this machine: `$HOME/.local/android-sdk`)
+- `adb` from that SDK's `platform-tools`
 
-`pwa-prototype-final`
+Create `local.properties` (gitignored):
 
-Point it at the last PWA commit on `main` before the platform reset.
+```
+sdk.dir=/home/naorw/.local/android-sdk
+```
 
-## Native work (not started)
+Adjust `sdk.dir` if the SDK lives elsewhere.
 
-When Native Phase 0 is authorized, this document should describe:
+```sh
+export JAVA_HOME="$HOME/.local/jdk-21"
+export ANDROID_HOME="$HOME/.local/android-sdk"
+export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
+```
 
-- Android Studio / SDK / JDK requirements
-- debug install on Pixel / GrapheneOS
-- release APK generation
-- local API-key configuration
+## Debug APK
 
-Until then, there is no `npm run dev` and no Gradle project.
+```sh
+./gradlew :app:assembleDebug
+```
 
-## Durable references
+Output:
 
-- Product: `PROJECT.md`
-- Native phases: `PHASES.md`
-- Authorization: `TASKS.md`
-- Design: `docs/design-system.md`
-- OpenWeather: `docs/openweather.md`
-- Prototype note: `docs/pwa-prototype.md`
+`app/build/outputs/apk/debug/app-debug.apk`
+
+## Release-like APK
+
+There is no production signing keystore in Phase 0.
+
+`assembleRelease` produces an installable APK signed with the **debug keystore**. Treat it as a release-like artifact, not a store-ready signed build.
+
+```sh
+./gradlew :app:assembleRelease
+```
+
+Output:
+
+`app/build/outputs/apk/release/app-release.apk`
+
+## Tests
+
+```sh
+./gradlew :app:testDebugUnitTest
+```
+
+## Devices
+
+```sh
+adb devices
+```
+
+## Install / update
+
+```sh
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+Or the release-like APK:
+
+```sh
+adb install -r app/build/outputs/apk/release/app-release.apk
+```
+
+## Launch
+
+```sh
+adb shell am start -n org.radilabs.weather/.MainActivity
+```
+
+## Logs
+
+```sh
+adb logcat --pid="$(adb shell pidof -s org.radilabs.weather)"
+```
+
+Filter:
+
+```sh
+adb logcat | grep -i weather
+```
+
+Do not expect the OpenWeather key in logs. If it appears, that is a bug.
+
+## Uninstall
+
+```sh
+adb uninstall org.radilabs.weather
+```
+
+## GrapheneOS / Pixel
+
+Install the APK with `adb` (or copy the file to the device). Confirm:
+
+1. App appears in the launcher as Weather
+2. Launch does not require a browser
+3. Today shows the graphite instrument
+4. Bottom nav: Today / Radar / Cities / Settings
+5. Settings can save a key; relaunch still shows configured; Remove clears it
