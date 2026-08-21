@@ -1,6 +1,6 @@
 # Android project
 
-Single module `:app`. Package `org.radilabs.weather`. Version `0.4.0` / versionCode `5`.
+Single module `:app`. Package `org.radilabs.weather`. Version `0.1.0` / versionCode `6`.
 
 ```
 app/src/main/java/org/radilabs/weather/
@@ -28,4 +28,4 @@ Gradle:
 
 Permission: `INTERNET`, `ACCESS_NETWORK_STATE`, `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`. No background location. Location is requested only from Cities after an explicit action.
 
-Release builds use the debug signing config until a production keystore exists.
+Release APKs require a production keystore. See `docs/signing.md`. `assembleRelease` fails if signing is not configured.

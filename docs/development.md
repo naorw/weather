@@ -34,20 +34,22 @@ Output:
 
 `app/build/outputs/apk/debug/app-debug.apk`
 
-## Release-like APK
+## Production release APK
 
-There is no production signing keystore yet.
-
-
-`assembleRelease` produces an installable APK signed with the **debug keystore**. Treat it as a release-like artifact, not a store-ready signed build.
+Requires a production keystore. See `docs/signing.md`.
 
 ```sh
-./gradlew :app:assembleRelease
+./gradlew :app:prepareReleaseArtifact
 ```
 
-Output:
+Outputs (gitignored):
 
-`app/build/outputs/apk/release/app-release.apk`
+* `dist/weather-v0.1.0.apk`
+* `dist/SHA256SUMS`
+
+`assembleRelease` fails if signing is missing. That is intentional.
+
+First production install over Phase 0–4 debug-signed builds requires uninstall. That wipes the local API key, saved cities, and cache.
 
 ## Tests
 
@@ -67,11 +69,13 @@ adb devices
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Or the release-like APK:
+Or the production APK after signing is configured:
 
 ```sh
-adb install -r app/build/outputs/apk/release/app-release.apk
+adb install dist/weather-v0.1.0.apk
 ```
+
+If a debug-signed Weather is already installed, uninstall first (`docs/signing.md`).
 
 ## Launch
 
@@ -109,3 +113,12 @@ Install the APK with `adb` (or copy the file to the device). Confirm:
 4. Bottom nav: Today / Radar / Cities / Settings
 5. Settings can save a key; relaunch still shows configured; Remove clears it
 6. Radar: dark map, active place, PRECIP MAP overlay with a key; no Play Services
+7. Settings version shows `0.1.0`
+
+## Troubleshooting
+
+- Missing key: Settings → save OpenWeather key. Nothing is bundled in the APK.
+- Overlay tiles fail, map still works: key missing/invalid or network.
+- Radar blank after tab switch: MapView lifecycle is `onCreate` then observer; reopen Radar.
+- Production install fails with signature mismatch: uninstall the debug-signed app first.
+

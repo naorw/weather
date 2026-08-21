@@ -7,7 +7,3 @@ internal object OpenWeatherPaths {
     const val GEO_DIRECT = "/geo/1.0/direct"
     const val GEO_REVERSE = "/geo/1.0/reverse"
 }
-
-internal fun weatherQuery(lat: Double, lon: Double, apiKey: String): String {
-    return "lat=$lat&lon=$lon&units=metric&appid=$apiKey"
-}

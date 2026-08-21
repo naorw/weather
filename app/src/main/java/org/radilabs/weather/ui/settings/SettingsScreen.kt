@@ -1,5 +1,6 @@
 package org.radilabs.weather.ui.settings
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,15 +22,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
+import org.radilabs.weather.AppVersion
 import org.radilabs.weather.persist.ApiKeyStore
 import org.radilabs.weather.ui.theme.Wx
 
 @Composable
 fun SettingsScreen(store: ApiKeyStore) {
+    val context = LocalContext.current
+    val version = remember {
+        installedAppVersion(context)
+    }
     var draft by remember { mutableStateOf("") }
     var configured by remember { mutableStateOf(store.isConfigured()) }
     var status by remember { mutableStateOf(store.maskedLabel()) }
@@ -88,10 +97,20 @@ fun SettingsScreen(store: ApiKeyStore) {
             }
         }
         Spacer(Modifier.height(Wx.space6))
-        Text("Weather 0.4.0 · org.radilabs.weather", color = Wx.disabled, fontSize = Wx.meta)
+        Text(version.label(), color = Wx.disabled, fontSize = Wx.meta)
         Spacer(Modifier.height(Wx.space2))
-        Text("Units and provider UI belong to later phases.", color = Wx.textMuted, fontSize = Wx.body)
+        Text(
+            "OpenWeather free plan. Metric units. Key stays on this device.",
+            color = Wx.textMuted,
+            fontSize = Wx.body,
+        )
     }
+}
+
+internal fun installedAppVersion(context: android.content.Context): AppVersion {
+    val info = context.packageManager.getPackageInfo(context.packageName, 0)
+    val code = if (Build.VERSION.SDK_INT >= 28) info.longVersionCode else @Suppress("DEPRECATION") info.versionCode.toLong()
+    return AppVersion(name = info.versionName ?: "0", code = code)
 }
 
 @Composable
@@ -102,6 +121,7 @@ private fun InstrumentButton(label: String, danger: Boolean = false, onClick: ()
             .height(Wx.touchMin)
             .border(Wx.hairline, color)
             .clickable(onClick = onClick)
+            .semantics { contentDescription = label }
             .padding(horizontal = Wx.space4),
         contentAlignment = Alignment.Center,
     ) {

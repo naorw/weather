@@ -22,6 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import org.radilabs.weather.places.Place
@@ -84,7 +86,8 @@ fun CitiesScreen(
                 letterSpacing = 1.5.sp,
                 modifier = Modifier
                     .clickable { onSearch(query) }
-                    .padding(Wx.space2),
+                    .padding(Wx.space2)
+                    .semantics { contentDescription = "Search cities" },
             )
         }
         if (status.isNotBlank()) {
@@ -114,6 +117,7 @@ fun CitiesScreen(
                 .fillMaxWidth()
                 .height(Wx.touchMin)
                 .clickable(enabled = !permissionDenied, onClick = onUseDevice)
+                .semantics { contentDescription = deviceLabel }
                 .padding(top = Wx.space2),
         )
         if (active.source == PlaceSource.Device && saved.none { it.cacheKey == active.cacheKey }) {

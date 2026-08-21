@@ -22,3 +22,10 @@ dev-dist/
 *.log
 .env
 .env.*
+
+reviews/
+dist/
+*.jks
+*.keystore
+keystore.properties
+

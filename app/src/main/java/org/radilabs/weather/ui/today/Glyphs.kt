@@ -18,7 +18,7 @@ fun WeatherGlyph(id: GlyphId, modifier: Modifier = Modifier, color: Color = Wx.t
     Canvas(
         modifier
             .size(24.dp)
-            .semantics { contentDescription = "Condition ${id.name}" },
+            .semantics { contentDescription = "Condition ${id.name.lowercase()}" },
     ) {
         val s = Stroke(width = size.minDimension * 0.08f, cap = StrokeCap.Square)
         val cx = size.width / 2f

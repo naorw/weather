@@ -35,6 +35,31 @@ class SnapshotCacheTest {
         cache.write(record("1.0000:2.0000", Double.NaN))
         assertNull(cache.read("1.0000:2.0000"))
     }
+
+    @Test
+    fun writeFailureDoesNotThrowOrEraseExistingRow() {
+        val dir = createTempDirectory("wx-cache-fail").toFile()
+        val cache = FileSnapshotCache(dir)
+        val key = "59.3293:18.0686"
+        cache.write(record(key, 14.0))
+        val target = File(dir, "59.3293_18.0686.json")
+        target.delete()
+        target.mkdir()
+        cache.write(record(key, 18.0))
+        target.delete()
+        assertNull(cache.read(key))
+    }
+
+    @Test
+    fun atomicWriteLeavesReadableSnapshot() {
+        val dir = createTempDirectory("wx-cache-atomic").toFile()
+        val cache = FileSnapshotCache(dir)
+        val key = "59.3293:18.0686"
+        cache.write(record(key, 14.0))
+        cache.write(record(key, 16.0))
+        assertEquals(16.0, cache.read(key)!!.snapshot.current.temperatureC, 0.0)
+        assertEquals(false, dir.listFiles()!!.any { it.name.endsWith(".tmp") })
+    }
 }
 
 class StalenessTest {

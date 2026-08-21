@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.radilabs.weather.cache.Freshness
 import org.radilabs.weather.ui.instrument.AqScale
 import org.radilabs.weather.ui.instrument.Hairline
 import org.radilabs.weather.ui.instrument.RangeBar
@@ -37,10 +38,6 @@ fun TodayScreen(
     onRefresh: () -> Unit,
     footer: String = "WX / 3-HOUR FREE FORECAST",
 ) {
-    val ready = state as? TodayUiState.Ready
-    val snapshot = ready?.snapshot
-    val dayMin = snapshot?.days?.minOfOrNull { it.lowC }
-    val dayMax = snapshot?.days?.maxOfOrNull { it.highC }
     Column(
         Modifier
             .fillMaxSize()
@@ -48,8 +45,11 @@ fun TodayScreen(
             .padding(horizontal = Wx.space4, vertical = Wx.space3),
     ) {
         StatusRow(state = state, onRefresh = onRefresh)
-        when {
-            snapshot != null -> {
+        when (state) {
+            is TodayUiState.Ready -> {
+                val snapshot = state.snapshot
+                val dayMin = snapshot.days.minOfOrNull { it.lowC }
+                val dayMax = snapshot.days.maxOfOrNull { it.highC }
                 Hero(snapshot)
                 Hairline(Modifier.padding(vertical = Wx.space4))
                 ThreeHourStrip(snapshot.hours)
@@ -58,7 +58,7 @@ fun TodayScreen(
                 Hairline(Modifier.padding(vertical = Wx.space4))
                 Atmosphere(snapshot)
             }
-            state is TodayUiState.Loading -> {
+            TodayUiState.Loading -> {
                 Spacer(Modifier.height(Wx.space6))
                 Text("ACQUIRING WEATHER", color = Wx.amber, fontSize = Wx.heading, letterSpacing = 2.sp)
                 Text(
@@ -68,7 +68,7 @@ fun TodayScreen(
                     modifier = Modifier.padding(top = Wx.space2),
                 )
             }
-            state is TodayUiState.Failed -> {
+            is TodayUiState.Failed -> {
                 Spacer(Modifier.height(Wx.space6))
                 Text(state.error.title.uppercase(), color = Wx.warning, fontSize = Wx.heading, letterSpacing = 2.sp)
                 Text(
@@ -109,7 +109,7 @@ private fun StatusRow(state: TodayUiState, onRefresh: () -> Unit) {
                 state.acquiring -> Wx.amber to "ACQUIRING WEATHER"
                 state.note != null -> Wx.amber to state.note
                 else -> {
-                    val live = state.statusLine == "LIVE"
+                    val live = state.freshness == Freshness.Live
                     (if (live) Wx.textMuted else Wx.amber) to state.statusLine
                 }
             }

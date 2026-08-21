@@ -2,7 +2,6 @@ package org.radilabs.weather.cache
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import org.radilabs.weather.weather.WeatherSnapshot
 import java.io.File
 
 class FileSnapshotCache(
@@ -44,7 +43,21 @@ class FileSnapshotCache(
         if (record.schemaVersion != CACHE_SCHEMA_VERSION) return
         if (record.provider != CACHE_PROVIDER) return
         if (!record.snapshot.current.temperatureC.isFinite()) return
-        fileFor(record.cacheKey).writeText(gson.toJson(record))
+        val target = fileFor(record.cacheKey)
+        val tmp = File(target.parentFile, "${target.name}.tmp")
+        try {
+            directory.mkdirs()
+            tmp.writeText(gson.toJson(record))
+            if (!tmp.renameTo(target)) {
+                if (target.exists()) target.delete()
+                if (!tmp.renameTo(target)) {
+                    tmp.copyTo(target, overwrite = true)
+                    tmp.delete()
+                }
+            }
+        } catch (_: Exception) {
+            tmp.delete()
+        }
     }
 
     private fun fileFor(cacheKey: String): File {
@@ -72,5 +85,3 @@ class MemorySnapshotCache : SnapshotCache {
         rows[record.cacheKey] = record
     }
 }
-
-fun CachedWeather.usableSnapshot(): WeatherSnapshot = snapshot

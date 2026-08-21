@@ -4,15 +4,19 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.CancellationSignal
+import android.os.Looper
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import org.radilabs.weather.weather.Coordinates
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
-import java.util.function.Consumer
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class LocationUnavailableException(message: String) : Exception(message)
 
@@ -23,7 +27,7 @@ class DeviceLocator(private val context: Context) {
         return fine == PackageManager.PERMISSION_GRANTED || coarse == PackageManager.PERMISSION_GRANTED
     }
 
-    fun currentCoordinates(): Coordinates {
+    suspend fun currentCoordinates(): Coordinates {
         if (!hasPermission()) {
             throw LocationUnavailableException("Location permission denied.")
         }
@@ -34,28 +38,45 @@ class DeviceLocator(private val context: Context) {
             manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) -> LocationManager.NETWORK_PROVIDER
             else -> throw LocationUnavailableException("Location is unavailable.")
         }
-        val location = oneShot(manager, provider) ?: manager.getLastKnownLocation(provider)
-            ?: throw LocationUnavailableException("Location is unavailable.")
+        val location = try {
+            withTimeout(12_000) { oneShot(manager, provider) }
+        } catch (_: TimeoutCancellationException) {
+            manager.getLastKnownLocation(provider)
+                ?: throw LocationUnavailableException("Location is unavailable.")
+        } catch (cancelled: kotlinx.coroutines.CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            manager.getLastKnownLocation(provider)
+                ?: throw LocationUnavailableException("Location is unavailable.")
+        }
         return Coordinates(location.latitude, location.longitude)
     }
 
-    private fun oneShot(manager: LocationManager, provider: String): Location? {
-        val latch = CountDownLatch(1)
-        val holder = AtomicReference<Location?>()
-        if (Build.VERSION.SDK_INT >= 30) {
-            val consumer = Consumer<Location?> { value ->
-                holder.set(value)
-                latch.countDown()
+    private suspend fun oneShot(manager: LocationManager, provider: String): Location {
+        return suspendCancellableCoroutine { cont ->
+            val finished = AtomicBoolean(false)
+            fun complete(location: Location?) {
+                if (!finished.compareAndSet(false, true)) return
+                if (location != null) {
+                    cont.resume(location)
+                } else {
+                    cont.resumeWithException(LocationUnavailableException("Location is unavailable."))
+                }
             }
-            manager.getCurrentLocation(provider, CancellationSignal(), context.mainExecutor, consumer)
-        } else {
-            @Suppress("DEPRECATION")
-            manager.requestSingleUpdate(provider, { value ->
-                holder.set(value)
-                latch.countDown()
-            }, context.mainLooper)
+            if (Build.VERSION.SDK_INT >= 30) {
+                val signal = CancellationSignal()
+                cont.invokeOnCancellation { signal.cancel() }
+                manager.getCurrentLocation(provider, signal, context.mainExecutor) { value ->
+                    complete(value)
+                }
+            } else {
+                val listener = LocationListener { value -> complete(value) }
+                cont.invokeOnCancellation {
+                    runCatching { manager.removeUpdates(listener) }
+                }
+                @Suppress("DEPRECATION")
+                manager.requestSingleUpdate(provider, listener, Looper.getMainLooper())
+            }
         }
-        latch.await(12, TimeUnit.SECONDS)
-        return holder.get()
     }
 }

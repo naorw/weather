@@ -1,5 +1,7 @@
 package org.radilabs.weather.ui.radar
 
+import android.content.ComponentCallbacks2
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -49,6 +53,7 @@ import org.maplibre.android.style.layers.RasterLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.android.style.sources.RasterSource
 import org.maplibre.android.style.sources.TileSet
+import org.radilabs.weather.map.runMapAttach
 import org.radilabs.weather.map.DEFAULT_MAP_ZOOM
 import org.radilabs.weather.map.OPENFREE_DARK_STYLE
 import org.radilabs.weather.map.OverlayPlan
@@ -95,8 +100,22 @@ fun RadarScreen(place: Place, apiKey: String?) {
                 else -> Unit
             }
         }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        view.onCreate(Bundle())
+        val memory = object : ComponentCallbacks2 {
+            override fun onConfigurationChanged(newConfig: Configuration) = Unit
+            override fun onLowMemory() {
+                runCatching { view.onLowMemory() }
+            }
+            override fun onTrimMemory(level: Int) {
+                if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+                    runCatching { view.onLowMemory() }
+                }
+            }
+        }
+        runMapAttach(
+            onCreate = { view.onCreate(Bundle()) },
+            registerObserver = { lifecycleOwner.lifecycle.addObserver(observer) },
+        )
+        context.applicationContext.registerComponentCallbacks(memory)
         view.getMapAsync { map ->
             mapRef = map
             map.uiSettings.isCompassEnabled = false
@@ -114,6 +133,7 @@ fun RadarScreen(place: Place, apiKey: String?) {
         }
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
+            context.applicationContext.unregisterComponentCallbacks(memory)
             runCatching {
                 view.onPause()
                 view.onStop()
@@ -159,7 +179,8 @@ fun RadarScreen(place: Place, apiKey: String?) {
                             CameraUpdateFactory.newLatLngZoom(LatLng(lat, lon), DEFAULT_MAP_ZOOM),
                         )
                     }
-                    .padding(horizontal = Wx.space2, vertical = Wx.space3),
+                    .padding(horizontal = Wx.space2, vertical = Wx.space3)
+                    .semantics { contentDescription = "Recenter map on active location" },
             )
         }
         Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -223,6 +244,13 @@ fun RadarScreen(place: Place, apiKey: String?) {
                         color = if (selected) Wx.accent else Wx.textMuted,
                         fontSize = Wx.nav,
                         letterSpacing = 1.sp,
+                        modifier = Modifier.semantics {
+                            contentDescription = if (selected) {
+                                "${item.controlLabel} overlay selected"
+                            } else {
+                                "${item.controlLabel} overlay"
+                            }
+                        },
                     )
                 }
             }

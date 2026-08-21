@@ -45,3 +45,9 @@ fun errorFromHttpStatus(status: Int): WeatherError {
 fun redactSecrets(text: String): String {
     return text.replace(Regex("appid=[^&\\s\"#]*", RegexOption.IGNORE_CASE), "appid=redacted")
 }
+
+fun Throwable.toWeatherError(): WeatherError {
+    if (this is WeatherError) return this
+    return WeatherError(WeatherError.Code.Unknown, "Weather request failed.", cause = this)
+}
+

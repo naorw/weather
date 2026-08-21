@@ -15,6 +15,13 @@ import org.radilabs.weather.weather.WeatherError
 import org.radilabs.weather.weather.WeatherProvider
 import org.radilabs.weather.weather.WeatherSnapshot
 
+enum class RefreshTrigger {
+    Startup,
+    Navigation,
+    Reconnect,
+    Manual,
+}
+
 data class SessionView(
     val place: Place,
     val snapshot: TodaySnapshot?,
@@ -60,6 +67,11 @@ class WeatherSession(
         return inFlightKey == cacheKey
     }
 
+    fun shouldSkipAutomaticRefresh(place: Place): Boolean {
+        val cached = cache.read(place.cacheKey) ?: return false
+        return classifyFreshness(cached.fetchedAtMs, nowMs(), live = false) == Freshness.Cached
+    }
+
     fun clearInFlight(generation: Long) {
         if (this.generation == generation) inFlightKey = null
     }
@@ -94,15 +106,19 @@ class WeatherSession(
 
     fun applySuccess(generation: Long, place: Place, weather: WeatherSnapshot): SessionView? {
         if (!isCurrent(generation, place.cacheKey)) return null
-        cache.write(
-            CachedWeather(
-                cacheKey = place.cacheKey,
-                schemaVersion = CACHE_SCHEMA_VERSION,
-                provider = CACHE_PROVIDER,
-                fetchedAtMs = weather.fetchedAtMs,
-                snapshot = weather,
-            ),
-        )
+        try {
+            cache.write(
+                CachedWeather(
+                    cacheKey = place.cacheKey,
+                    schemaVersion = CACHE_SCHEMA_VERSION,
+                    provider = CACHE_PROVIDER,
+                    fetchedAtMs = weather.fetchedAtMs,
+                    snapshot = weather,
+                ),
+            )
+        } catch (_: Exception) {
+            // Persistence is optional. The live snapshot stays in memory.
+        }
         clearInFlight(generation)
         return SessionView(
             place = catalog.active(),

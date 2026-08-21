@@ -4,6 +4,26 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+import java.io.File
+import java.util.Properties
+
+fun localProp(name: String): String? {
+    val fromEnv = System.getenv(name.replace('.', '_').uppercase())
+    if (!fromEnv.isNullOrBlank()) return fromEnv
+    val propsFile = rootProject.file("local.properties")
+    if (!propsFile.exists()) return null
+    val props = Properties()
+    propsFile.inputStream().use { props.load(it) }
+    return props.getProperty(name)?.takeIf { it.isNotBlank() }
+}
+
+val releaseStorePath = localProp("weather.release.storeFile") ?: System.getenv("WEATHER_RELEASE_STORE_FILE")
+val releaseStorePassword = localProp("weather.release.storePassword") ?: System.getenv("WEATHER_RELEASE_STORE_PASSWORD")
+val releaseKeyAlias = localProp("weather.release.keyAlias") ?: System.getenv("WEATHER_RELEASE_KEY_ALIAS")
+val releaseKeyPassword = localProp("weather.release.keyPassword") ?: System.getenv("WEATHER_RELEASE_KEY_PASSWORD")
+val hasReleaseSigning = listOf(releaseStorePath, releaseStorePassword, releaseKeyAlias, releaseKeyPassword).all { !it.isNullOrBlank() } &&
+    releaseStorePath?.let { file(it).isFile } == true
+
 android {
     namespace = "org.radilabs.weather"
     compileSdk = 35
@@ -12,9 +32,20 @@ android {
         applicationId = "org.radilabs.weather"
         minSdk = 29
         targetSdk = 35
-        versionCode = 5
-        versionName = "0.4.0"
+        versionCode = 6
+        versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseStorePath as String)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
     }
 
     buildTypes {
@@ -23,9 +54,16 @@ android {
         }
         release {
             isMinifyEnabled = false
-            // Phase 0: no production keystore. Release APK is signed with the
-            // debug key so assembleRelease produces an installable artifact.
-            signingConfig = signingConfigs.getByName("debug")
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                null
+            }
         }
     }
 
@@ -42,6 +80,34 @@ android {
     }
     testOptions {
         unitTests.isIncludeAndroidResources = true
+    }
+}
+
+gradle.taskGraph.whenReady {
+    val wantsRelease = allTasks.any {
+        it.name == "assembleRelease" || it.name == "packageRelease" || it.name == "prepareReleaseArtifact"
+    }
+    if (wantsRelease && !hasReleaseSigning) {
+        throw GradleException(
+            "Release signing is not configured. Add weather.release.* to local.properties " +
+                "(see docs/signing.md). Refusing to produce a debug-signed release APK.",
+        )
+    }
+}
+
+tasks.register("prepareReleaseArtifact") {
+    dependsOn("assembleRelease")
+    doLast {
+        val apk = file("build/outputs/apk/release/app-release.apk")
+        val dist = rootProject.file("dist")
+        dist.mkdirs()
+        val named = File(dist, "weather-v0.1.0.apk")
+        apk.copyTo(named, overwrite = true)
+        val sha = providers.exec {
+            commandLine("sha256sum", named.absolutePath)
+        }.standardOutput.asText.get().trim()
+        File(dist, "SHA256SUMS").writeText("$sha\n")
+        println(sha)
     }
 }
 

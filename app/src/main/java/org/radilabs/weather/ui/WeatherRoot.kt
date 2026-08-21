@@ -33,8 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,6 +47,7 @@ import org.radilabs.weather.persist.ApiKeyStore
 import org.radilabs.weather.places.Place
 import org.radilabs.weather.places.PlaceSource
 import org.radilabs.weather.places.placeFromCoordinates
+import org.radilabs.weather.session.RefreshTrigger
 import org.radilabs.weather.session.SessionView
 import org.radilabs.weather.session.WeatherSession
 import org.radilabs.weather.ui.cities.CitiesScreen
@@ -53,6 +57,7 @@ import org.radilabs.weather.ui.theme.Wx
 import org.radilabs.weather.ui.today.TodayScreen
 import org.radilabs.weather.ui.today.TodayUiState
 import org.radilabs.weather.weather.WeatherError
+import org.radilabs.weather.weather.toWeatherError
 
 @Composable
 fun WeatherRoot(
@@ -76,30 +81,61 @@ fun WeatherRoot(
         saved = session.saved()
     }
 
-    fun refresh(place: Place = session.active()) {
+    fun refresh(place: Place = session.active(), trigger: RefreshTrigger = RefreshTrigger.Manual) {
         if (session.shouldReuseInFlight(place.cacheKey) && session.active().cacheKey == place.cacheKey) {
-            publish(session.viewFromCache(place, acquiring = true))
+            scope.launch {
+                try {
+                    val view = withContext(Dispatchers.IO) { session.viewFromCache(place, acquiring = true) }
+                    publish(view)
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (_: Exception) {
+                    // Keep current Today state; do not crash.
+                }
+            }
             return
         }
         val gen = session.beginGeneration(place)
-        publish(session.viewFromCache(place, acquiring = true))
         scope.launch {
-            val outcome = withContext(Dispatchers.IO) {
-                try {
-                    Result.success(session.fetchSnapshot(place))
-                } catch (error: WeatherError) {
-                    Result.failure(error)
-                } catch (error: Exception) {
-                    Result.failure(WeatherError(WeatherError.Code.Unknown, "Weather request failed.", cause = error))
+            try {
+                val preview = withContext(Dispatchers.IO) { session.viewFromCache(place, acquiring = true) }
+                publish(preview)
+                val skipAutomatic = trigger != RefreshTrigger.Manual &&
+                    trigger != RefreshTrigger.Startup &&
+                    withContext(Dispatchers.IO) { session.shouldSkipAutomaticRefresh(place) }
+                if (skipAutomatic) {
+                    session.clearInFlight(gen)
+                    publish(withContext(Dispatchers.IO) { session.viewFromCache(place, acquiring = false) })
+                    return@launch
                 }
+                val outcome = withContext(Dispatchers.IO) {
+                    try {
+                        Result.success(session.fetchSnapshot(place))
+                    } catch (cancelled: CancellationException) {
+                        throw cancelled
+                    } catch (error: Exception) {
+                        Result.failure(error.toWeatherError())
+                    }
+                }
+                val weather = outcome.getOrNull()
+                val view = withContext(Dispatchers.IO) {
+                    if (weather != null) {
+                        session.applySuccess(gen, place, weather)
+                    } else {
+                        val failure = outcome.exceptionOrNull()?.toWeatherError()
+                            ?: WeatherError(WeatherError.Code.Unknown, "Weather request failed.")
+                        session.applyFailure(gen, place, failure)
+                    }
+                }
+                if (view != null) publish(view)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                val view = withContext(Dispatchers.IO) {
+                    session.applyFailure(gen, place, error.toWeatherError())
+                }
+                if (view != null) publish(view)
             }
-            val weather = outcome.getOrNull()
-            val view = if (weather != null) {
-                session.applySuccess(gen, place, weather)
-            } else {
-                session.applyFailure(gen, place, outcome.exceptionOrNull() as WeatherError)
-            }
-            if (view != null) publish(view)
         }
     }
 
@@ -107,7 +143,7 @@ fun WeatherRoot(
         val chosen = if (save) session.save(place) else session.activate(place)
         results = emptyList()
         citiesStatus = ""
-        refresh(chosen)
+        refresh(chosen, RefreshTrigger.Manual)
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -122,16 +158,20 @@ fun WeatherRoot(
         }
     }
 
-    LaunchedEffect(Unit) { refresh(session.active()) }
+    var firstToday by remember { mutableStateOf(true) }
     LaunchedEffect(dest) {
-        if (dest == Dest.Today) refresh(session.active())
+        if (dest == Dest.Today) {
+            val trigger = if (firstToday) RefreshTrigger.Startup else RefreshTrigger.Navigation
+            firstToday = false
+            refresh(session.active(), trigger)
+        }
     }
 
     DisposableEffect(context) {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                refresh(session.active())
+                refresh(session.active(), RefreshTrigger.Reconnect)
             }
         }
         runCatching { cm.registerDefaultNetworkCallback(callback) }
@@ -164,7 +204,7 @@ fun WeatherRoot(
             when (dest) {
                 Dest.Today -> TodayScreen(
                     state = today,
-                    onRefresh = { refresh(session.active()) },
+                    onRefresh = { refresh(session.active(), RefreshTrigger.Manual) },
                     footer = "WX / ${active.displayName.uppercase()} / 3-HOUR FREE FORECAST",
                 )
                 Dest.Radar -> RadarScreen(
@@ -183,19 +223,22 @@ fun WeatherRoot(
                                 val hits = withContext(Dispatchers.IO) { session.search(query) }
                                 results = hits
                                 citiesStatus = if (hits.isEmpty()) "No results." else ""
+                            } catch (cancelled: CancellationException) {
+                                throw cancelled
                             } catch (error: WeatherError) {
                                 results = emptyList()
                                 citiesStatus = "${error.title}: ${error.message}"
+                            } catch (error: Exception) {
+                                results = emptyList()
+                                val mapped = error.toWeatherError()
+                                citiesStatus = "${mapped.title}: ${mapped.message}"
                             }
                         }
                     },
                     onSelectResult = { select(it, save = true) },
                     onActivate = { select(it, save = false) },
                     onRemove = { place ->
-                        val next = session.remove(place.cacheKey)
-                        saved = session.saved()
-                        active = next
-                        refresh(next)
+                        refresh(session.remove(place.cacheKey), RefreshTrigger.Manual)
                     },
                     onSaveActive = { select(session.active(), save = true) },
                     onUseDevice = {
@@ -242,6 +285,9 @@ fun WeatherRoot(
                         color = if (isActive) Wx.accent else Wx.textMuted,
                         fontSize = Wx.nav,
                         letterSpacing = 1.5.sp,
+                        modifier = Modifier.semantics {
+                            contentDescription = if (isActive) "${item.label} selected" else item.label
+                        },
                     )
                 }
             }
@@ -253,7 +299,7 @@ private fun SessionView.toUi(): TodayUiState {
     val snap = snapshot
     val err = error
     return when {
-        snap != null -> TodayUiState.Ready(snap, acquiring, note, statusLine)
+        snap != null -> TodayUiState.Ready(snap, acquiring, note, statusLine, freshness)
         err != null -> TodayUiState.Failed(err)
         else -> TodayUiState.Loading
     }
@@ -266,7 +312,7 @@ private suspend fun useDevice(
     status: (String) -> Unit,
 ) {
     try {
-        val coords = withContext(Dispatchers.IO) { locator.currentCoordinates() }
+        val coords = locator.currentCoordinates()
         val fallback = placeFromCoordinates(
             latitude = coords.latitude,
             longitude = coords.longitude,
@@ -279,7 +325,12 @@ private suspend fun useDevice(
         status("")
     } catch (_: LocationUnavailableException) {
         status("Location unavailable. Search still works.")
+    } catch (cancelled: CancellationException) {
+        throw cancelled
     } catch (error: WeatherError) {
         status("${error.title}: ${error.message}")
+    } catch (error: Exception) {
+        val mapped = error.toWeatherError()
+        status("${mapped.title}: ${mapped.message}")
     }
 }

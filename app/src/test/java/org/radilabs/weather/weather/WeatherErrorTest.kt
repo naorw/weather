@@ -19,6 +19,14 @@ class WeatherErrorTest {
         assertFalse(redacted.contains("super-secret"))
         assertTrue(redacted.contains("appid=redacted"))
     }
+
+    @Test
+    fun mapsUnknownThrowablesWithoutCast() {
+        val mapped = IllegalStateException("boom").toWeatherError()
+        assertEquals(WeatherError.Code.Unknown, mapped.code)
+        val original = WeatherError(WeatherError.Code.Network, "offline")
+        assertEquals(WeatherError.Code.Network, original.toWeatherError().code)
+    }
 }
 
 private fun assertTrue(condition: Boolean) {

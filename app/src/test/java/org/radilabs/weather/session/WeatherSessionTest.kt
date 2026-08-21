@@ -67,6 +67,34 @@ class WeatherSessionTest {
         assertEquals("LIVE", live!!.statusLine)
         assertEquals(12, live.snapshot!!.temperatureC)
     }
+
+    @Test
+    fun cacheWriteFailureStillReturnsLiveView() {
+        val place = placeFromCoordinates(59.3293, 18.0686, "Stockholm", source = PlaceSource.Default)
+        val cache = object : org.radilabs.weather.cache.SnapshotCache {
+            override fun read(cacheKey: String) = null
+            override fun write(record: org.radilabs.weather.cache.CachedWeather) {
+                error("disk full")
+            }
+        }
+        val session = WeatherSession(MemoryPlaceCatalog(place), cache, UnusedProvider, nowMs = { 1_000L })
+        val gen = session.beginGeneration(place)
+        val view = session.applySuccess(gen, place, snap(19.0))
+        assertEquals("LIVE", view!!.statusLine)
+        assertEquals(19, view.snapshot!!.temperatureC)
+    }
+
+    @Test
+    fun skipsAutomaticRefreshWhenCacheIsFresh() {
+        val place = placeFromCoordinates(59.3293, 18.0686, "Stockholm", source = PlaceSource.Default)
+        val cache = MemorySnapshotCache()
+        cache.write(record(place.cacheKey, 11.0).copy(fetchedAtMs = 90_000L))
+        val session = WeatherSession(MemoryPlaceCatalog(place), cache, UnusedProvider, nowMs = { 100_000L })
+        assertEquals(true, session.shouldSkipAutomaticRefresh(place))
+        cache.write(record(place.cacheKey, 11.0).copy(fetchedAtMs = 1L))
+        val stale = WeatherSession(MemoryPlaceCatalog(place), cache, UnusedProvider, nowMs = { 100_000_000L })
+        assertEquals(false, stale.shouldSkipAutomaticRefresh(place))
+    }
 }
 
 private object UnusedProvider : WeatherProvider {

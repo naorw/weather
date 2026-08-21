@@ -1,0 +1,6 @@
+-keep class org.radilabs.weather.weather.** { *; }
+-keep class org.radilabs.weather.cache.CachedWeather { *; }
+-keep class org.radilabs.weather.places.Place { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+-dontwarn org.maplibre.**
