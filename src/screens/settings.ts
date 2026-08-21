@@ -4,7 +4,7 @@ export function renderSettings(): string {
   return `
     <section class="placeholder" aria-labelledby="screen-title">
       <h1 id="screen-title" class="placeholder__title">Settings</h1>
-      <p class="placeholder__copy">Units, location behavior, and provider configuration belong to later phases. Live weather is on Today.</p>
+      <p class="placeholder__copy">Units and provider configuration belong to later phases. Search, saved cities, and optional device location are on Cities.</p>
       <p class="placeholder__meta">Weather 0.0.0 · org.radilabs.weather</p>
       <div class="probe">
         <p class="panel__title">Local storage probe</p>

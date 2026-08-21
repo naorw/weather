@@ -76,6 +76,8 @@ export function formatUpdated(epochMs: number, offsetSeconds: number): string {
   return `${hour}:${minute}`;
 }
 
+export { formatAge } from "../cache/stale";
+
 export function heroHighLow(snapshot: WeatherSnapshot): { high?: number; low?: number } {
   const todayKey = localDateKey(
     snapshot.current.observedAtMs,

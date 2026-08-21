@@ -11,14 +11,12 @@ Base: `https://api.openweathermap.org`
 | Current weather | `/data/2.5/weather` |
 | 5-day / 3-hour forecast | `/data/2.5/forecast` |
 | Air pollution | `/data/2.5/air_pollution` |
+| Direct geocoding | `/geo/1.0/direct` |
+| Reverse geocoding | `/geo/1.0/reverse` |
 
-Query parameters on every call:
+Weather query parameters: `lat`, `lon`, `units=metric`, `appid`. Geocoding uses `q`+`limit` (direct) or `lat`/`lon`+`limit` (reverse), and `appid`. Limit is 5 for search and 1 for reverse.
 
-- `lat`, `lon` (required)
-- `units=metric` (canonical ingest units)
-- `appid` (API key)
-
-Not used: One Call 3.0, paid daily/16-day forecast, history, geocoding, maps.
+Not used: One Call 3.0, paid daily/16-day forecast, history, maps.
 
 ## Free-plan assumptions
 

@@ -6,6 +6,13 @@ export const OPENWEATHER_PATHS = {
   air: "/data/2.5/air_pollution",
 } as const;
 
+export const OPENWEATHER_GEO_PATHS = {
+  direct: "/geo/1.0/direct",
+  reverse: "/geo/1.0/reverse",
+} as const;
+
+export const GEO_SEARCH_LIMIT = 5;
+
 export const REQUEST_TIMEOUT_MS = 12_000;
 
 export type OpenWeatherEndpoint = keyof typeof OPENWEATHER_PATHS;

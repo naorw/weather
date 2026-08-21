@@ -135,6 +135,20 @@ describe("renderToday states", () => {
     expect(errorCopy(new WeatherError("rate_limit", "x")).title).toBe("Rate limited");
   });
 
+  it("renders cached stale weather without pretending it is live", () => {
+    const html = renderToday({
+      status: "loaded",
+      refreshing: false,
+      snapshot: snapshot(),
+      source: "cache",
+      freshness: "stale",
+      fetchedAtMs: Date.now() - 47 * 60_000,
+    });
+    expect(html).toContain("STALE");
+    expect(html).toContain("UPDATED 47 MIN AGO");
+    expect(html).toContain("18°");
+  });
+
   it("renders variable days and partial markers", () => {
     const html = renderToday({ status: "loaded", refreshing: false, snapshot: snapshot() });
     expect(html).toContain("part.");

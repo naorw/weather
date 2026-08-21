@@ -1,7 +1,18 @@
 import { WeatherError, errorFromFetchFailure, errorFromHttpStatus } from "../errors";
 import type { AirQuality, Coordinates, CurrentConditions, ForecastPoint, Location } from "../models";
+import type { PlaceCandidate } from "../place";
+import { normalizePlaceCandidates } from "./geocode";
 import { normalizeAirQuality, normalizeCurrent, normalizeForecastPoints, normalizeLocation } from "./normalize";
-import { OPENWEATHER_PATHS, REQUEST_TIMEOUT_MS, openWeatherFetchHref, openWeatherRequestUrl, usesDevProxy, type OpenWeatherEndpoint } from "./urls";
+import {
+  GEO_SEARCH_LIMIT,
+  OPENWEATHER_GEO_PATHS,
+  OPENWEATHER_PATHS,
+  REQUEST_TIMEOUT_MS,
+  openWeatherFetchHref,
+  openWeatherRequestUrl,
+  usesDevProxy,
+  type OpenWeatherEndpoint,
+} from "./urls";
 
 export type OpenWeatherDeps = {
   fetch: typeof fetch;
@@ -47,24 +58,53 @@ export class OpenWeatherClient {
     return normalizeAirQuality(payload);
   }
 
+  async searchPlaces(query: string, signal?: AbortSignal): Promise<PlaceCandidate[]> {
+    const q = query.trim();
+    if (!q) return [];
+    const url = this.keyedUrl(openWeatherRequestUrl(OPENWEATHER_GEO_PATHS.direct));
+    url.searchParams.set("q", q);
+    url.searchParams.set("limit", String(GEO_SEARCH_LIMIT));
+    return normalizePlaceCandidates(await this.fetchJson(url, signal));
+  }
+
+  async reverseGeocode(
+    coordinates: Coordinates,
+    signal?: AbortSignal,
+  ): Promise<PlaceCandidate | undefined> {
+    const url = this.keyedUrl(openWeatherRequestUrl(OPENWEATHER_GEO_PATHS.reverse));
+    url.searchParams.set("lat", String(coordinates.latitude));
+    url.searchParams.set("lon", String(coordinates.longitude));
+    url.searchParams.set("limit", "1");
+    return normalizePlaceCandidates(await this.fetchJson(url, signal))[0];
+  }
+
+  private keyedUrl(url: URL): URL {
+    const key = this.requireKey();
+    if (!usesDevProxy()) url.searchParams.set("appid", key);
+    return url;
+  }
+
+  private requireKey(): string {
+    const key = this.getApiKey();
+    if (!key) {
+      throw new WeatherError("auth", "Weather API key is not configured.");
+    }
+    return key;
+  }
+
   private async request(
     endpoint: OpenWeatherEndpoint,
     coordinates: Coordinates,
     external?: AbortSignal,
   ): Promise<unknown> {
-    const key = this.getApiKey();
-    if (!key) {
-      throw new WeatherError("auth", "Weather API key is not configured.");
-    }
-
-    const url = openWeatherRequestUrl(OPENWEATHER_PATHS[endpoint]);
+    const url = this.keyedUrl(openWeatherRequestUrl(OPENWEATHER_PATHS[endpoint]));
     url.searchParams.set("lat", String(coordinates.latitude));
     url.searchParams.set("lon", String(coordinates.longitude));
     url.searchParams.set("units", "metric");
-    if (!usesDevProxy()) {
-      url.searchParams.set("appid", key);
-    }
+    return this.fetchJson(url, external);
+  }
 
+  private async fetchJson(url: URL, external?: AbortSignal): Promise<unknown> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     const onExternalAbort = () => controller.abort();

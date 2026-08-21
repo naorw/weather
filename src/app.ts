@@ -1,7 +1,9 @@
+import { bindCities, renderCities } from "./screens/cities";
 import { bindSettings, renderSettings } from "./screens/settings";
 import { renderPlaceholder } from "./screens/placeholder";
 import { bindToday, renderToday } from "./screens/today";
 import { parseRoute, routeHash, ROUTES, type Route } from "./routes";
+import { citiesController } from "./cities/controller";
 
 const LABELS: Record<Route, string> = {
   today: "Today",
@@ -20,10 +22,7 @@ function screen(route: Route): string {
         "Map and radar layers are deferred to a later phase.",
       );
     case "cities":
-      return renderPlaceholder(
-        "Cities",
-        "Saved cities and search are deferred to a later phase.",
-      );
+      return renderCities(citiesController().getState());
     case "settings":
       return renderSettings();
   }
@@ -63,6 +62,7 @@ export function mount(root: HTMLElement): void {
     const route = parseRoute(window.location.hash);
     main.innerHTML = screen(route);
     if (route === "today") unbind = bindToday(main);
+    if (route === "cities") unbind = bindCities(main);
     if (route === "settings") bindSettings(main);
     for (const link of root.querySelectorAll<HTMLAnchorElement>("[data-route]")) {
       const active = link.dataset.route === route;

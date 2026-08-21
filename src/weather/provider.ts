@@ -7,6 +7,8 @@ export type WeatherProvider = {
   getCurrent: OpenWeatherClient["getCurrent"];
   getForecast: OpenWeatherClient["getForecast"];
   getAirQuality: OpenWeatherClient["getAirQuality"];
+  searchPlaces: OpenWeatherClient["searchPlaces"];
+  reverseGeocode: OpenWeatherClient["reverseGeocode"];
   getSnapshot(coordinates: Coordinates, signal?: AbortSignal): Promise<WeatherSnapshot>;
 };
 
@@ -17,6 +19,8 @@ export function createWeatherProvider(deps: OpenWeatherDeps): WeatherProvider {
     getCurrent: (coordinates, signal) => client.getCurrent(coordinates, signal),
     getForecast: (coordinates, signal) => client.getForecast(coordinates, signal),
     getAirQuality: (coordinates, signal) => client.getAirQuality(coordinates, signal),
+    searchPlaces: (query, signal) => client.searchPlaces(query, signal),
+    reverseGeocode: (coordinates, signal) => client.reverseGeocode(coordinates, signal),
     async getSnapshot(coordinates, signal) {
       const currentTask = client.getCurrent(coordinates, signal);
       const forecastTask = client.getForecast(coordinates, signal);

@@ -116,3 +116,21 @@ describe("getSnapshot request discipline", () => {
     expect(JSON.stringify(snapshot)).not.toMatch(/"cod"/);
   });
 });
+
+describe("geocoding requests", () => {
+  it("does not fetch for an empty query", async () => {
+    const fetchImpl = vi.fn(async () => jsonResponse([]));
+    const results = await client(fetchImpl).searchPlaces("  ");
+    expect(results).toEqual([]);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("normalizes direct geocoding hits", async () => {
+    const fetchImpl = vi.fn(async () =>
+      jsonResponse([{ name: "Oslo", lat: 59.91, lon: 10.75, country: "NO" }]),
+    );
+    const results = await client(fetchImpl).searchPlaces("Oslo");
+    expect(results[0]).toMatchObject({ displayName: "Oslo", country: "NO" });
+    expect(String(fetchImpl.mock.calls.at(0)?.at(0))).toContain("/geo/1.0/direct");
+  });
+});

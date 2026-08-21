@@ -1,15 +1,13 @@
 # Task Execution
 
-Current phase: **none authorized after Phase 2**
+Current phase: **Phase 3 — Locations and Offline**
 
-Phase 2 — Weather Instrument is **accepted** (2026-08-21). Evidence: `tasks/phase-2.md`.
-
-Phase 0 — PWA Foundation and Phase 1 — Weather Data are accepted and preserved as historical execution evidence.
+Phase 0 — PWA Foundation, Phase 1 — Weather Data, and Phase 2 — Weather Instrument are accepted and preserved as historical execution evidence.
 
 1. Read `PROJECT.md`.
 2. Read `PHASES.md`.
 3. Read `TASKS.md`.
-4. Read only the currently authorized phase task file, if any.
+4. Read only the current phase task file: `tasks/phase-3.md`.
 5. Execute the first incomplete task.
 6. Do not work outside the current phase.
 7. Discoveries outside scope go to **Deferred Work** in the current phase task file.
@@ -23,7 +21,9 @@ Phase 0 — PWA Foundation and Phase 1 — Weather Data are accepted and preserv
 
 ## Current Execution
 
-No phase is authorized after Phase 2 acceptance.
+Authorized task file:
+
+`tasks/phase-3.md`
 
 Historical task files:
 
@@ -33,7 +33,7 @@ Historical task files:
 
 Historical task files are execution evidence.
 
-Do not reopen completed phase work unless a later authorized phase explicitly requires a compatible change.
+Do not reopen completed phase work unless Phase 3 explicitly requires a compatible change to existing implementation.
 
 ## Source of Truth
 
@@ -51,39 +51,42 @@ Implementation choices must remain inside all higher-level constraints.
 Use:
 
 * `decisions/` for durable choices, constraints, rejections, and compatibility commitments future work must respect
-* `docs/` for durable technical knowledge, external API behavior, schemas, setup procedures, visual-system rules, and operational knowledge
+* `docs/` for durable technical knowledge, API behavior, schemas, cache/invalidation rules, setup procedures, visual-system rules, and operational knowledge
 * current phase task file for implementation progress, tests, results, changed files, temporary findings, known limitations, and deferred work
 
 If forgetting information could cause a future agent to make a wrong implementation choice, record it.
 
 Otherwise, don't.
 
-## Phase 2 Boundaries
+## Phase 3 Boundaries
 
-Phase 2 owns the real **Today weather instrument**.
+Phase 3 owns:
 
-It may change existing Today components and supporting visual-system implementation where required to bind normalized Phase 1 data cleanly.
-
-It must not implement:
-
-* location permission
+* manual location search
 * saved cities
-* city management
-* offline weather caching
-* radar/maps
-* notifications
-* weather alerts
-* AI commentary
-* paid weather data
-* animation systems for decoration alone
+* active city persistence
+* optional device geolocation
+* weather caching per location
+* stale-state handling
+* offline display of last successful data
+* recovery when connectivity returns
 
-Those remain later-phase work.
+Phase 3 must not implement:
+
+* radar/maps
+* push notifications
+* background periodic sync requiring special platform behavior
+* severe-weather alert infrastructure
+* user accounts
+* cloud sync
+* location history
+* background location tracking
 
 ## After Phase Acceptance
 
-Once Phase 2 has been reviewed and explicitly accepted:
+Once Phase 3 has been reviewed and explicitly accepted:
 
-* preserve `tasks/phase-2.md` as historical execution evidence
+* preserve `tasks/phase-3.md` as historical execution evidence
 * update `TASKS.md` to authorize the next phase
 * update the current phase listed in this file
 * create only the newly authorized phase task file

@@ -33,14 +33,15 @@ function read(paths: string[]): string {
     .toLowerCase();
 }
 
-describe("phase 1 scope", () => {
-  it("does not add later-phase location or paid-api features", () => {
+describe("phase scope", () => {
+  it("does not add paid OpenWeather APIs or later-phase product features", () => {
     const source = read(walk(join(root, "src")).concat([join(root, "index.html")]));
-    expect(source).not.toMatch(/geolocation/);
-    expect(source).not.toMatch(/navigator\.geolocation/);
     expect(source).not.toMatch(/onecall/);
     expect(source).not.toMatch(/\/data\/3\.0\//);
     expect(source).not.toMatch(/pro\.openweathermap/);
+    expect(source).not.toMatch(/watchposition/);
+    expect(source).not.toMatch(/pushmanager/);
+    expect(source).not.toMatch(/backgroundsync/);
   });
 
   it("keeps OpenWeather URLs inside the provider client", () => {
@@ -48,6 +49,7 @@ describe("phase 1 scope", () => {
       join(root, "src", "app.ts"),
       join(root, "src", "main.ts"),
       join(root, "src", "screens", "today.ts"),
+      join(root, "src", "screens", "cities.ts"),
       join(root, "src", "screens", "placeholder.ts"),
       join(root, "src", "screens", "settings.ts"),
     ]);

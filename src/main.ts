@@ -3,6 +3,7 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/today.css";
+import "./styles/cities.css";
 
 const root = document.querySelector("#app");
 if (!(root instanceof HTMLElement)) {

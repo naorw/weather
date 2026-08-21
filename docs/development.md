@@ -80,20 +80,23 @@ Chrome DevTools → Application → Manifest should list name `Weather`, id `org
 
 ## Storage reset / debugging
 
-Phase 0 uses a proof IndexedDB database only:
+Phase 0 proof IndexedDB (Settings probe only):
 
 - Name: `org.radilabs.weather.phase0`
 - Store: `kv`
 
+Phase 3 application IndexedDB:
+
+- Name: `org.radilabs.weather`
+- Stores: `places`, `snapshots`, `kv` (`active`, `order`)
+
 DevTools → Application → IndexedDB.
 
-In the app: **Settings → Run storage probe** writes a timestamp; **Reset proof store** clears the store.
+In the app: **Settings → Run storage probe** writes a timestamp to the proof store only; **Reset proof store** clears that proof store, not saved cities or weather cache.
 
-Programmatic reset is `resetStore()` in `src/storage.ts`.
+See `docs/locations.md` and `docs/weather-cache.md`.
 
-This database is not a weather cache.
-
-## Weather data probe (Phase 1)
+## Weather data (Phase 1–3)
 
 Copy `.env.example` to `.env` and set `VITE_OPENWEATHER_API_KEY`. See `docs/credentials.md`.
 
@@ -106,11 +109,11 @@ Dev (`npm run dev`) proxies `/ow` to OpenWeather so a phone on the LAN only need
 
 Firefox: `localhost` and `http://192.168.x.x:5173` are **different origins**. Cache Storage can show the LAN IP with empty caches; that is not IndexedDB. Unregister service workers for **both** hosts (about:serviceworkers). Then Ctrl+Shift+R.
 
-- Settings → **Fetch Stockholm weather** retrieves current, forecast, and air quality through the provider boundary.
-- Optional live test: `npm test` runs `tests/weather/live.test.ts` when that env var is set.
-- The Today screen remains the Phase 0 static snapshot.
+Today loads the active location (first-run default Stockholm) through the provider, then caches the snapshot per location. Cities search uses OpenWeather geocoding on the same key.
 
-If the probe says `network`, the key was probably loaded (missing key is `auth`). A URL that works in the address bar is not the same as `fetch()` from the app.
+- Optional live test: `npm test` runs `tests/weather/live.test.ts` when that env var is set.
+
+If a request says `network`, the key was probably loaded (missing key is `auth`). A URL that works in the address bar is not the same as `fetch()` from the app.
 
 Firefox: never pass a detached `fetch` reference; call `globalThis.fetch(...)`. A leftover service worker on `localhost` vs a LAN IP is a different origin.
 
@@ -124,3 +127,4 @@ Owner live check (2026-08-21): Stockholm current, 40-point forecast, 6 aggregate
 - System fonts differ across GrapheneOS and stock Android; tabular numbers depend on the UI face.
 - Firefox requires `window.fetch`; a copied `fetch` function throws TypeError.
 - OpenWeather CORS/OPTIONS is unreliable from the browser; Vite `/ow` proxy is used on local hosts.
+- Geolocation needs a secure context. `http://192.168.x.x` phone preview is typically insecure; use HTTPS, localhost, or the installed PWA origin.

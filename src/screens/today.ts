@@ -1,4 +1,5 @@
 import { glyphLabel, glyphMarkup } from "../glyphs";
+import { placeLabel } from "../locations/model";
 import { rangeBar } from "../range-bar";
 import type { TodayController } from "../today/controller";
 import { todayController } from "../today/controller";
@@ -7,6 +8,7 @@ import {
   compassFromDeg,
   errorCopy,
   escapeHtml,
+  formatAge,
   formatMm,
   formatPercent,
   formatPressure,
@@ -134,14 +136,28 @@ function atmosphere(snapshot: WeatherSnapshot): string {
     </section>`;
 }
 
-function renderLoaded(snapshot: WeatherSnapshot, refreshHint?: string): string {
-  const loc = snapshot.location.country
+function locationTitle(state: TodayState, snapshot?: WeatherSnapshot): string {
+  if (state.place) return placeLabel(state.place);
+  if (!snapshot) return "Weather";
+  return snapshot.location.country
     ? `${snapshot.location.displayName} ${snapshot.location.country}`
     : snapshot.location.displayName;
+}
+
+function freshnessBanner(state: TodayState, nowMs = Date.now()): string {
+  if (!state.snapshot || !state.fetchedAtMs) return "";
+  if (state.freshness !== "fresh" && state.freshness !== "stale") return "";
+  const mark = state.freshness === "stale" ? "STALE" : "CACHED";
+  return `<p class="freshness freshness--${state.freshness}" role="status"><span>${mark}</span> UPDATED ${formatAge(state.fetchedAtMs, nowMs)}</p>`;
+}
+
+function renderLoaded(state: TodayState, snapshot: WeatherSnapshot, refreshHint?: string): string {
+  const loc = locationTitle(state, snapshot);
   const range = heroHighLow(snapshot);
   const offset = snapshot.location.timezoneOffsetSeconds;
   return `
     <article class="today">
+      ${freshnessBanner(state)}
       ${refreshHint ? `<p class="refresh-note" role="status">${escapeHtml(refreshHint)}</p>` : ""}
       <header class="hero">
         <div class="hero__text">
@@ -186,7 +202,7 @@ function renderStatus(kind: "loading" | "empty" | "error", title: string, detail
 
 export function renderToday(state: TodayState): string {
   if (state.status === "loading" || state.status === "idle") {
-    return renderStatus("loading", "Stockholm", "Acquiring weather.");
+    return renderStatus("loading", locationTitle(state), "Acquiring weather.");
   }
   if (state.status === "empty") {
     return renderStatus("empty", "No weather", "No usable weather payload.");
@@ -201,7 +217,7 @@ export function renderToday(state: TodayState): string {
       : state.refreshing
         ? "Refreshing…"
         : undefined;
-    return renderLoaded(state.snapshot, hint);
+    return renderLoaded(state, state.snapshot, hint);
   }
   return renderStatus("empty", "No weather", "No usable weather payload.");
 }
@@ -225,9 +241,16 @@ export function bindToday(root: HTMLElement, controller: TodayController = today
   };
 
   const unsubscribe = controller.subscribe(paint);
+  const onOnline = (): void => controller.onOnline();
+  window.addEventListener("online", onOnline);
   paint();
   if (controller.getState().status === "idle") {
     void controller.load();
+  } else {
+    void controller.refresh();
   }
-  return unsubscribe;
+  return () => {
+    unsubscribe();
+    window.removeEventListener("online", onOnline);
+  };
 }

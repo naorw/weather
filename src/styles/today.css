@@ -17,11 +17,30 @@
   min-width: auto;
 }
 
-.refresh-note {
+.refresh-note,
+.freshness {
   font-size: var(--text-meta);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
+}
+
+.refresh-note {
   color: var(--color-accent-amber);
+}
+
+.freshness {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.freshness--stale {
+  color: var(--color-accent-amber);
+}
+
+.freshness span {
+  color: inherit;
 }
 
 .hero {
