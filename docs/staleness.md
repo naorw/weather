@@ -1,6 +1,6 @@
 # Staleness
 
-Thresholds apply to `fetchedAtMs` on the cached/live snapshot, compared with `Date.now()`.
+Thresholds apply to `fetchedAtMs` on the cached/live snapshot, compared with current time. These rules are product contract, not PWA-specific.
 
 ## Thresholds
 

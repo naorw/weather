@@ -1,6 +1,8 @@
 # Normalized weather models
 
-Application code consumes types in `src/weather/models.ts`. OpenWeather payloads stay inside `src/weather/openweather/`.
+Application code consumes application-owned models. OpenWeather payloads stay inside the provider client.
+
+The PWA types lived in `src/weather/models.ts`; native Kotlin types must match this contract unless a later decision changes it.
 
 ## Canonical units
 
@@ -21,7 +23,7 @@ The free 2.5 APIs do not supply an IANA timezone name.
 
 ## Optional fields
 
-`undefined` means the provider omitted the value. `0` is a measured zero (for example `pop: 0` or `rain.3h: 0`). Do not collapse those.
+Omitted means the provider did not supply the value. `0` is a measured zero (for example probability 0 or rain 0 mm). Do not collapse those.
 
 ## Condition vocabulary
 
@@ -40,9 +42,10 @@ Unknown OpenWeather ids map to `unknown`. UI must use this vocabulary, not numer
 
 ## Provider boundary
 
-`WeatherProvider` in `src/weather/provider.ts`:
+`WeatherProvider` shape:
 
 - `getCurrent`
 - `getForecast`
 - `getAirQuality`
 - `getSnapshot` — one current + one forecast + one air request; air failure (except auth) leaves `airQuality` unset
+- geocoding as needed by the locations phase (`searchPlaces`, `reverseGeocode`)

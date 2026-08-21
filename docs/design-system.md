@@ -1,6 +1,8 @@
-# Design system — Phase 0
+# Design System
 
 Graphite instrumentation. Not a lifestyle dashboard. Not Material card chrome. Not neon.
+
+Token names below are the durable visual contract. Native Compose should reproduce these values; CSS custom properties were the PWA implementation and are not required.
 
 ## Surfaces
 
@@ -28,38 +30,38 @@ Do not use pure `#000` as the only surface.
 | Location / title | `--text-location` | uppercase, tracked, teal |
 | Section heading | `--text-heading` | uppercase, tracked |
 | Primary data value | `--text-value` | tabular |
-| Body | `--text-body` | 0.95rem |
+| Body | `--text-body` | readable body size |
 | Technical metadata | `--text-meta` | small, amber in the hero |
 | Navigation label | `--text-nav` | uppercase, tracked |
 
-Font stack: system UI sans. See `decisions/0005-font-strategy.md`.
+Font stack: platform UI sans. See `decisions/0005-font-strategy.md` (system fonts; no CDN).
 
 ## Spacing
 
-`--space-1` (0.25rem) through `--space-7` (3rem). Prefer these over ad-hoc pixels.
+A tight scale from extra-small inset (~4 dp) through large section gaps. Prefer a named scale over ad-hoc values.
 
 ## Geometry
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `--radius-container` | 8px | settings probe panel |
-| `--radius-module` | 4px | buttons |
-| `--border-width` | 1px | hairline dividers |
-| `--touch-min` | 48px | nav and buttons |
+| Token | Intent |
+| --- | --- |
+| `--radius-container` | ~8 dp containers |
+| `--radius-module` | ~4 dp controls |
+| `--border-width` | 1 dp hairline dividers |
+| `--touch-min` | 48 dp nav and buttons |
 
 Corners stay tight. No pill navigation.
 
-Dividers are 1px `--color-border` lines, not shadows or blur.
+Dividers are hairline `--color-border` lines, not shadows or blur.
 
 ## Weather glyphs
 
-Stroke SVG, `currentColor`, 24×24 viewBox, square caps. Categories match the Phase 1 vocabulary: clear, partly-cloudy, cloudy, overcast, drizzle, light-rain, rain, heavy-rain, thunderstorm, light-snow, snow, fog, unknown. Unknown is a circle with a mark. Implemented in `src/glyphs.ts`.
+Stroke glyphs, current color, square caps. Categories: clear, partly-cloudy, cloudy, overcast, drizzle, light-rain, rain, heavy-rain, thunderstorm, light-snow, snow, fog, unknown. Unknown is a circle with a mark.
 
 ## Hierarchy
 
-**Now (hero) → Next 3 hours → Next days → atmospheric detail**
+**Now (hero) → Next hours → Next days → atmospheric detail**
 
-The temperature is the dominant element. The 3-hour strip is horizontal. Days are compact rows with a shared-scale range bar. Wind uses a compact compass mark plus readout. Remaining atmosphere is a labeled list, not a grid of equal cards.
+The temperature is the dominant element. The near-term strip is horizontal. Days are compact rows with a shared-scale range bar. Wind uses a compact compass mark plus readout. Remaining atmosphere is a labeled list, not a grid of equal cards.
 
 Hero high/low prefer today’s daily summary when that local date exists; otherwise the current-condition station envelope; otherwise an em dash (missing), never a fake zero.
 
@@ -69,7 +71,7 @@ Muted `part.` on incomplete first/last forecast days. See `decisions/0011-partia
 
 ## Loading / empty / error
 
-Same graphite instrument frame. Loading says “Acquiring weather” with no numeric placeholders. Empty is “No usable weather payload.” Provider errors use Phase 1 error codes with human titles (Credentials, Offline, Rate limited, …) and never include keys or raw payloads. A failed refresh keeps the last valid snapshot and shows a short amber note.
+Same graphite instrument frame. Loading says “Acquiring weather” with no numeric placeholders. Empty is “No usable weather payload.” Provider errors use stable error codes with human titles (Credentials, Offline, Rate limited, …) and never include keys or raw payloads. A failed refresh keeps the last valid snapshot and shows a short amber note.
 
 ## Constraints
 
@@ -77,4 +79,4 @@ Same graphite instrument frame. Loading says “Acquiring weather” with no num
 - No photographic backgrounds
 - Accents are sparse: teal for location/active/range, amber for timestamp/meta
 - Precipitation percentages also use teal so rain chance is not color-only (the `%` value is present)
-- Focus: 2px `--color-focus` outline
+- Focus/selection must remain visible

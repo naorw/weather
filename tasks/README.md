@@ -1,39 +1,39 @@
 # Task Execution
 
-Current phase: **Phase 3 — Locations and Offline**
+Current phase: **none authorized**
 
-Phase 0 — PWA Foundation, Phase 1 — Weather Data, and Phase 2 — Weather Instrument are accepted and preserved as historical execution evidence.
+Native Android Phase 0 is defined in `PHASES.md` but is **not** authorized. Do not create `tasks/phase-0.md`. Do not begin native implementation.
+
+Historical `tasks/phase-0.md` … `tasks/phase-3.md` are PWA prototype evidence only.
 
 1. Read `PROJECT.md`.
 2. Read `PHASES.md`.
 3. Read `TASKS.md`.
-4. Read only the current phase task file: `tasks/phase-3.md`.
-5. Execute the first incomplete task.
-6. Do not work outside the current phase.
-7. Discoveries outside scope go to **Deferred Work** in the current phase task file.
-8. A completed task does not imply a completed phase.
-9. Phase completion requires satisfying the current phase acceptance criteria and handoff contract in `PHASES.md`.
-10. Record decisions under `decisions/` only when future work must respect them.
-11. Record durable technical knowledge under `docs/` only when future work needs it.
-12. Keep the current phase task file updated with implementation evidence, tests, files changed, known limitations, deferred work, and decisions.
-13. Stop at phase handoff.
-14. Never create or begin the next phase task file automatically.
+4. Read only the currently authorized phase task file, if any.
+5. If none is authorized, STOP.
+6. Execute the first incomplete task of the authorized phase only.
+7. Do not work outside the current phase.
+8. Discoveries outside scope go to **Deferred Work** in the current phase task file.
+9. A completed task does not imply a completed phase.
+10. Phase completion requires satisfying the current phase acceptance criteria and handoff contract in `PHASES.md`.
+11. Record decisions under `decisions/` only when future work must respect them.
+12. Record durable technical knowledge under `docs/` only when future work needs it.
+13. Keep the current phase task file updated with implementation evidence, tests, files changed, known limitations, deferred work, and decisions.
+14. Stop at phase handoff.
+15. Never create or begin the next phase task file automatically.
 
 ## Current Execution
 
-Authorized task file:
+No native phase is authorized.
 
-`tasks/phase-3.md`
-
-Historical task files:
+Historical PWA task files (do not execute):
 
 * `tasks/phase-0.md`
 * `tasks/phase-1.md`
 * `tasks/phase-2.md`
+* `tasks/phase-3.md`
 
-Historical task files are execution evidence.
-
-Do not reopen completed phase work unless Phase 3 explicitly requires a compatible change to existing implementation.
+Do not reopen PWA work.
 
 ## Source of Truth
 
@@ -45,6 +45,8 @@ When instructions appear to conflict, use this precedence:
 4. current `tasks/phase-NUMBER.md` — implementation tasks
 
 Implementation choices must remain inside all higher-level constraints.
+
+Native Android (`decisions/0017-native-android-platform.md`) governs v1. Historical PWA decisions remain in `decisions/` but are superseded where that record says so.
 
 ## Information Placement
 
@@ -58,37 +60,12 @@ If forgetting information could cause a future agent to make a wrong implementat
 
 Otherwise, don't.
 
-## Phase 3 Boundaries
+## After Phase Authorization
 
-Phase 3 owns:
+Once the owner/planner explicitly authorizes Native Phase 0:
 
-* manual location search
-* saved cities
-* active city persistence
-* optional device geolocation
-* weather caching per location
-* stale-state handling
-* offline display of last successful data
-* recovery when connectivity returns
-
-Phase 3 must not implement:
-
-* radar/maps
-* push notifications
-* background periodic sync requiring special platform behavior
-* severe-weather alert infrastructure
-* user accounts
-* cloud sync
-* location history
-* background location tracking
-
-## After Phase Acceptance
-
-Once Phase 3 has been reviewed and explicitly accepted:
-
-* preserve `tasks/phase-3.md` as historical execution evidence
-* update `TASKS.md` to authorize the next phase
+* create only `tasks/phase-0.md`
+* update `TASKS.md` to name that phase
 * update the current phase listed in this file
-* create only the newly authorized phase task file
 
-The implementation agent must not perform this transition by itself.
+The implementation agent must not perform this authorization by itself.

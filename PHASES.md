@@ -1,6 +1,6 @@
 # Weather — Phase Contracts
 
-These phases define immutable execution boundaries.
+These phases define immutable execution boundaries for the **native Android** product.
 
 Tasks inside a phase may be refined as implementation progresses, but the phase goal, scope, exclusions, acceptance criteria, and handoff contract must not be changed during implementation.
 
@@ -12,28 +12,30 @@ The implementation agent must stop after satisfying the active phase handoff con
 
 Detailed task files are created only for the currently authorized phase.
 
+The PWA prototype roadmap and its accepted/stopped work live in Git history and in historical files under `tasks/` and `docs/handoffs/`. Those are **not** phases of the native implementation. Native work starts again at Phase 0.
+
 ---
 
 # Phase Map
 
-| Phase | Name                  | Outcome                                                                                           |
-| ----- | --------------------- | ------------------------------------------------------------------------------------------------- |
-| 0     | PWA Foundation        | Installable mobile-first application shell with local storage and design-system baseline          |
-| 1     | Weather Data          | OpenWeather free APIs work through normalized internal models                                     |
-| 2     | Weather Instrument    | Today screen implements the core retro-technical design language                                  |
-| 3     | Locations and Offline | Saved cities, geolocation, caching, stale-state handling, and recovery work reliably              |
-| 4     | Radar and Maps        | Useful technical map/radar view exists within the free-first constraint                           |
-| 5     | Daily-Use Polish      | Android installation, performance, accessibility, reliability, and production polish are complete |
+| Phase | Name                  | Outcome                                                                                         |
+| ----- | --------------------- | ----------------------------------------------------------------------------------------------- |
+| 0     | Android Foundation    | Installable Kotlin/Compose APK with design-system baseline, navigation shell, and local proofs  |
+| 1     | Weather Data          | OpenWeather free APIs work through normalized internal models                                   |
+| 2     | Weather Instrument    | Today screen implements the core retro-technical design language                                |
+| 3     | Locations and Offline | Saved cities, geolocation, caching, stale-state handling, and recovery work reliably            |
+| 4     | Radar and Maps        | Useful technical map/radar view exists within the free-first constraint                         |
+| 5     | Daily-Use Polish      | GrapheneOS/Pixel install, performance, accessibility, reliability, and production polish        |
 
 Future capabilities require additional phase contracts.
 
 ---
 
-# Phase 0 — PWA Foundation
+# Phase 0 — Android Foundation
 
 ## Goal
 
-Create the smallest working Weather application and establish the development, build, run, install, and debugging workflow.
+Create the smallest working native Weather application and establish the development, build, install, and debugging workflow.
 
 The application must already establish the intended visual direction without implementing real weather functionality.
 
@@ -41,50 +43,38 @@ The application must already establish the intended visual direction without imp
 
 * Repository exists.
 * `PROJECT.md` exists.
-* Modern web development environment is available.
+* Native Android platform decision `0017` is accepted.
+* An Android development environment is available.
+* Owner/planner has **explicitly authorized** this phase and created `tasks/phase-0.md`.
 * No later-phase functionality is required.
 
 ## Scope
 
-* Create the web application project.
-* Establish mobile-first portrait layout.
-* Implement PWA fundamentals:
-
-  * web manifest
-  * installable application metadata
-  * standalone display mode
-  * basic service worker/application shell
-* Establish local development and production build commands.
+* Create a minimal Android application project.
+* Use Kotlin and Jetpack Compose.
+* Establish application identity (`org.radilabs.weather` unless the owner changes `0001`).
+* Establish debug install on a device or emulator and a production/release APK build path.
+* Document build, run, install, and debugging workflow for GrapheneOS / Pixel.
 * Create the main navigation shell:
 
   * Today
   * Radar
   * Cities
   * Settings
-* Create static/fake Today screen content showing:
+* Create a static Today screen reproducing the accepted design language:
 
   * current condition hero
   * hourly strip
   * multi-day forecast
   * atmospheric data area
-* Establish initial design tokens:
-
-  * graphite surfaces
-  * typography hierarchy
-  * cyan/teal accent
-  * amber accent
-  * warning color
-  * spacing
-  * borders/dividers
-  * shape language
-* Establish reusable layout primitives where clearly needed.
-* Initialize IndexedDB or equivalent structured local storage and prove read/write works.
-* Document build, run, install, and debugging workflow.
+* Establish initial design tokens in Compose (graphite palette, typography hierarchy, accents, spacing, borders, shape).
+* Prove local persistence with a small read/write of structured data (not weather cache).
+* Prove runtime local storage/configuration of an OpenWeather API key (no network call yet).
+* Do not wrap the old PWA in WebView, Capacitor, or a Trusted Web Activity.
 
 ## Explicit Exclusions
 
 * Real OpenWeather calls.
-* API-key handling.
 * Geolocation.
 * City search.
 * Saved cities.
@@ -93,24 +83,25 @@ The application must already establish the intended visual direction without imp
 * Radar/maps.
 * Background refresh.
 * Notifications.
+* Widgets.
+* WorkManager periodic work.
 * AI features.
 * Analytics.
 * User accounts.
 
 ## Acceptance Criteria
 
-1. Application runs locally.
-2. Production build succeeds.
-3. Application is installable as a PWA in a supported Android browser.
-4. Standalone launch works.
-5. Bottom navigation works between placeholder screens.
-6. Today screen clearly demonstrates the intended visual direction.
-7. UI remains usable at common Android portrait sizes.
-8. IndexedDB/local structured storage can be initialized and accessed.
-9. Service worker/application shell works without network after first load.
-10. Build/run/debug documentation exists.
-11. No real weather-provider integration exists.
-12. No later-phase functionality has been implemented.
+1. Application builds.
+2. A debug APK installs and launches on Android.
+3. A release/production APK can be generated.
+4. Bottom navigation works between placeholder screens.
+5. Today screen clearly demonstrates the intended visual direction.
+6. UI remains usable at common Pixel portrait sizes.
+7. Local structured storage can be initialized and accessed.
+8. An API key can be stored and read back locally without a network request.
+9. Build/run/debug/install documentation exists.
+10. No real weather-provider integration exists.
+11. No later-phase functionality has been implemented.
 
 ## Handoff Contract
 
@@ -143,10 +134,11 @@ The important outcome is trustworthy data acquisition and normalization.
 
 ## Entry Conditions
 
-* Phase 0 handoff contract is satisfied.
+* Native Phase 0 handoff contract is satisfied.
 * Application shell works.
 * Local storage works.
-* Build and PWA workflow works.
+* Runtime credential storage works.
+* Build and APK workflow works.
 
 ## Scope
 
@@ -173,7 +165,7 @@ Do not build a generic plugin architecture.
 
 ### OpenWeather integration
 
-Implement required free API calls.
+Implement required free API calls using the locally stored key.
 
 Support enough data to power:
 
@@ -209,13 +201,11 @@ Handle:
 
 Errors must produce application-level states rather than raw provider errors leaking directly into UI components.
 
-### Credential strategy
+### Credential use
 
-Determine and implement the v1 API-key strategy appropriate for the intended deployment.
+Read the key from local runtime storage. Do not embed it in source or the APK.
 
-Document clearly what is and is not secret in a browser-distributed application.
-
-Avoid fake security theater.
+Document what is and is not secret on a personal device.
 
 ## Explicit Exclusions
 
@@ -383,7 +373,7 @@ Support basic detail interaction where needed without introducing complex naviga
 
 Before Phase 2 can be declared complete:
 
-* Today screen must be visually reviewed on a real Android-sized viewport.
+* Today screen must be visually reviewed on a real Pixel / GrapheneOS device.
 * Loading/error/empty states must be demonstrated.
 * Design tokens/components future screens depend on must be documented.
 * Accessibility problems discovered must be recorded.
@@ -431,14 +421,15 @@ Support:
 
 ### Device location
 
-Support optional browser geolocation.
+Support optional Android location permission.
 
 Requirements:
 
-* explicit user action or understandable permission flow
+* explicit user action
 * graceful denial
 * no requirement to grant location permission
 * no background location tracking
+* no silent location access on startup
 
 ### Weather cache
 
@@ -451,11 +442,17 @@ Store enough metadata to determine:
 * provider
 * age/staleness
 
+Never show one city's cached or in-flight result under another city's name.
+
+Never erase a valid cached snapshot because refresh failed.
+
+Cached data must never pretend to be live.
+
 ### Offline behavior
 
 When the network is unavailable:
 
-* application shell must load
+* the application must still launch
 * last successful data should display where available
 * stale data must be visually identified
 * failed refresh must not erase valid cached data
@@ -464,7 +461,7 @@ When the network is unavailable:
 
 When connectivity returns:
 
-* refresh should work cleanly
+* refresh should work cleanly without polling
 * stale indicators should clear only after successful new data
 * duplicate or corrupt location state must not be created
 
@@ -472,7 +469,7 @@ When connectivity returns:
 
 * Radar/maps.
 * Push notifications.
-* Background periodic sync requiring special platform behavior.
+* Background periodic sync.
 * Severe-weather alert infrastructure.
 * Accounts.
 * Cloud sync.
@@ -482,7 +479,7 @@ When connectivity returns:
 ## Acceptance Criteria
 
 1. Location search works.
-2. Saved cities persist across restart.
+2. Saved cities persist across process death and reboot.
 3. Active city persists.
 4. Device location works when permission is granted.
 5. Application remains fully usable when permission is denied.
@@ -491,7 +488,7 @@ When connectivity returns:
 8. Cached data is clearly marked stale with an understandable age/state.
 9. Failed refresh does not destroy cached weather.
 10. Recovery after restored connectivity works.
-11. Location state remains consistent across reload/install/restart.
+11. Location state remains consistent across restart.
 12. Earlier phase behavior does not regress.
 
 ## Handoff Contract
@@ -499,11 +496,11 @@ When connectivity returns:
 Before Phase 3 can be declared complete:
 
 * Offline behavior must be tested intentionally with network disabled.
-* Permission-granted and permission-denied paths must be tested.
+* Permission-granted and permission-denied paths must be tested on Pixel / GrapheneOS.
 * Cache schema and invalidation rules must be documented.
 * Staleness rules must be documented.
 * Tests and results must be recorded.
-* Known browser/PWA limitations must be recorded.
+* Known platform limitations must be recorded.
 * Deferred work must be recorded.
 
 Then STOP.
@@ -531,7 +528,7 @@ The Radar screen should feel like a technical weather instrument, not a generic 
 
 ### Map foundation
 
-Implement a map view appropriate for mobile PWA use.
+Implement a native map view appropriate for GrapheneOS / Pixel.
 
 Support:
 
@@ -588,7 +585,7 @@ Map/radar failure must not affect the Today screen.
 
 ## Acceptance Criteria
 
-1. Radar screen opens and renders correctly on Android-sized viewports.
+1. Radar screen opens and renders correctly on Pixel portrait sizes.
 2. Current selected location can be shown on the map.
 3. At least one genuinely useful weather layer works.
 4. Layer controls accurately reflect available data.
@@ -619,7 +616,7 @@ Do not begin Phase 5.
 
 ## Goal
 
-Make Weather a dependable v0.1 daily-use application on Android / GrapheneOS.
+Make Weather a dependable v0.1 daily-use application on GrapheneOS / Pixel.
 
 This phase improves reliability and finish.
 
@@ -632,28 +629,26 @@ It does not expand product scope.
 
 ## Scope
 
-### PWA installation
+### Android packaging
 
 Verify and polish:
 
-* app name
+* application name
 * icon set
-* splash behavior where supported
-* theme colors
-* standalone mode
-* update behavior
+* splash / launch
 * version visibility
+* debug vs release APK
+* install on GrapheneOS / Pixel
 
 ### Performance
 
 Improve:
 
-* initial load
+* cold start
 * cached startup
 * API refresh responsiveness
 * map loading
 * unnecessary network calls
-* bundle size where materially useful
 
 ### Accessibility
 
@@ -661,9 +656,8 @@ Review:
 
 * font scaling
 * contrast
-* screen-reader labels
+* TalkBack labels
 * touch targets
-* keyboard use where applicable
 * reduced-motion preference where motion exists
 
 ### Reliability
@@ -675,7 +669,6 @@ Handle cleanly:
 * missing storage
 * denied permissions
 * provider downtime
-* stale service worker
 * API-rate-limit state
 
 ### UX polish
@@ -684,7 +677,6 @@ Improve:
 
 * loading transitions
 * refresh behavior
-* pull-to-refresh or equivalent where appropriate
 * city switching
 * settings clarity
 * empty states
@@ -696,9 +688,8 @@ Complete:
 
 * local development
 * build
-* deployment
+* APK install
 * API configuration
-* PWA installation
 * troubleshooting
 * known limitations
 
@@ -711,15 +702,16 @@ Complete:
 * AI.
 * Accounts.
 * Cloud sync.
-* Native Android rewrite.
 * Widgets.
 * Watch-face integration.
 * Notification infrastructure.
+* WorkManager periodic sync.
 * Generic provider plugin architecture.
+* PWA or hybrid rewrite.
 
 ## Acceptance Criteria
 
-1. Application can be installed and launched reliably on Android.
+1. Application can be installed and launched reliably as an APK on Pixel / GrapheneOS.
 2. Upgrade/update behavior works without breaking local state.
 3. Today, Cities, Settings, and Radar work together without major regressions.
 4. Offline startup remains useful.
@@ -737,7 +729,7 @@ Complete:
 Before Phase 5 can be declared complete:
 
 * Full regression pass must be performed.
-* Installation must be tested on a real Android device.
+* Installation must be tested on a real Pixel / GrapheneOS device.
 * Offline/recovery flow must be retested.
 * Accessibility review must be recorded.
 * Performance observations must be recorded.
@@ -748,4 +740,3 @@ Before Phase 5 can be declared complete:
 Then STOP.
 
 Future work requires a new phase contract.
-

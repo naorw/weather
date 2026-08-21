@@ -2,7 +2,9 @@
 
 ## Status
 
-**Accepted** — 2026-08-21.
+**Accepted** — 2026-08-21 (PWA prototype).
+
+This file is historical PWA evidence. Native work is not this phase. Do not execute this file.
 
 Owner completed visual review of the live Today instrument.
 

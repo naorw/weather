@@ -1,6 +1,6 @@
 # OpenWeather integration
 
-Phase 1 uses only the free OpenWeather 2.5 HTTP APIs over HTTPS.
+The weather-data phase uses only the free OpenWeather 2.5 HTTP APIs over HTTPS.
 
 ## Endpoints
 
@@ -17,6 +17,8 @@ Base: `https://api.openweathermap.org`
 Weather query parameters: `lat`, `lon`, `units=metric`, `appid`. Geocoding uses `q`+`limit` (direct) or `lat`/`lon`+`limit` (reverse), and `appid`. Limit is 5 for search and 1 for reverse.
 
 Not used: One Call 3.0, paid daily/16-day forecast, history, maps.
+
+Captured response examples: `docs/fixtures/openweather/`.
 
 ## Free-plan assumptions
 
@@ -36,7 +38,7 @@ Air: `list[0].dt`, `list[0].main.aqi` (1–5 OpenWeather scale), `list[0].compon
 
 ## Rate limits
 
-Free keys are subject to OpenWeather’s published call budget (commonly 60 calls/minute on the free tier; confirm on the account). Phase 1 issues **three** requests per explicit snapshot (current + forecast + air). No polling.
+Free keys are subject to OpenWeather’s published call budget (commonly 60 calls/minute on the free tier; confirm on the account). One explicit snapshot issues **three** requests (current + forecast + air). No polling.
 
 HTTP 429 becomes application error `rate_limit`.
 

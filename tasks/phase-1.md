@@ -2,7 +2,9 @@
 
 ## Status
 
-**Accepted** — 2026-08-21.
+**Accepted** — 2026-08-21 (PWA prototype).
+
+This file is historical PWA evidence. Native work is not this phase. Do not execute this file.
 
 Owner verified live Stockholm retrieval (current, 40 forecast points, 6 local days with partial first/last, OpenWeather AQI 2 / fair).
 

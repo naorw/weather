@@ -1,17 +1,20 @@
 # Weather
 
-A small, installable weather PWA for Android / GrapheneOS.
+A native Android weather instrument for GrapheneOS / Pixel.
 
-Weather is a fast, visually distinctive weather instrument. It presents useful conditions clearly, works well as an installed Android PWA, and stays useful when connectivity is temporarily unavailable.
+Weather presents useful conditions clearly, installs as an APK, and stays useful when connectivity is temporarily unavailable.
 
 Initial data comes from the OpenWeather free APIs. The weather provider must remain replaceable.
+
+Kotlin + Jetpack Compose. The earlier PWA is a completed prototype in Git history, not the v1 platform (`decisions/0017-native-android-platform.md`).
 
 ## Product
 
 - Current conditions, hourly forecast, and the multi-day horizon available on the free plan
 - Optional device location, city search, and saved cities
 - Local caching with explicit stale-state handling
-- Installable PWA (standalone), mobile / portrait first
+- Runtime locally configured OpenWeather credential
+- Native APK, GrapheneOS / Pixel first
 
 v1 is free-first, privacy-conscious, and does not include accounts, analytics, AI commentary, or paid OpenWeather features.
 
@@ -23,32 +26,17 @@ Primary screens: **Today**, **Radar**, **Cities**, **Settings**.
 
 ## Status
 
-Phase 0, Phase 1, and Phase 2 are **accepted** (2026-08-21). Phase 3 is not authorized yet.
+No native implementation phase is authorized.
 
-See `PROJECT.md` for product intent, `PHASES.md` for phase contracts, and `docs/development.md` for commands.
+Native Phase 0 — Android Foundation must be opened explicitly by the owner/planner. Do not create `tasks/phase-0.md` until then.
 
-## Quick start
-
-```sh
-npm install
-npm run dev
-```
-
-Production / PWA check:
-
-```sh
-npm test
-npm run build
-npm run preview
-```
+See `PROJECT.md`, `PHASES.md`, and `docs/development.md`.
 
 ## Layout
 
 ```
 decisions/     architectural and product decisions
 docs/          durable technical notes and phase handoffs
-icons/         application icons
-src/           application source
-tasks/         currently authorized phase task files
-tests/         tests
+icons/         application mark
+tasks/         authorized phase tasks (none yet); historical PWA files remain
 ```

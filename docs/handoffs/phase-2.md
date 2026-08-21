@@ -1,8 +1,8 @@
-# Phase 2 handoff
+# Phase 2 handoff (PWA prototype)
 
 Date: 2026-08-21
 
-Accepted: 2026-08-21
+Accepted: 2026-08-21 (PWA platform; later superseded as shipping v1 by `decisions/0017-native-android-platform.md`)
 
 ## Outcome
 

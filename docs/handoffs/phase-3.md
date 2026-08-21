@@ -1,21 +1,27 @@
-# Phase 3 handoff
+# Phase 3 handoff (PWA prototype)
 
 Date: 2026-08-21
 
-Awaiting owner acceptance (device permission / standalone / offline launch checks).
+**Stopped / superseded** by `decisions/0017-native-android-platform.md`.
+
+This handoff is **not** acceptance.
 
 ## Outcome
 
-Cities search, saved/active places, optional device geolocation, per-location weather cache, stale/cached Today, and reconnect refresh are in place. First-run active location is Stockholm until the user searches or uses device location. Phase 4 was not started.
+Significant Phase 3 behavior was implemented in the PWA prototype: Cities search, saved/active places, optional device geolocation, per-location weather cache, stale/cached Today, and reconnect refresh. First-run active location was Stockholm until the user searched or used device location.
 
-## Proof (automated)
+The owner did not complete final PWA Pixel / GrapheneOS acceptance (permissions, standalone, offline launch, recovery).
 
-```sh
-npm test   # 18 files, 83 tests, pass
-npm run lint
-npm run build
-```
+The PWA implementation is intentionally abandoned rather than completed.
+
+PWA Phase 4 was never started.
+
+## Proof (automated, historical)
+
+The PWA tree at the prototype tip passed `npm test`, `npm run lint`, and `npm run build`. That tree is preserved in Git history, not in the working product.
 
 ## Stop
 
-Do not begin Phase 4 until this handoff is explicitly accepted.
+Do not begin PWA Phase 4.
+
+Do not begin native Android implementation until Native Phase 0 is explicitly authorized.

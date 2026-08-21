@@ -2,13 +2,13 @@
 
 ## Status
 
-Implementation complete; awaiting owner Pixel / GrapheneOS validation and acceptance.
+**Stopped / superseded by native Android platform decision** (`decisions/0017-native-android-platform.md`).
 
-Phase 0, Phase 1, and Phase 2 are accepted.
+This file is historical PWA prototype evidence. Do not execute it.
 
-Implement **Phase 3 — Locations and Offline only**.
+Significant Phase 3 behavior was implemented in the PWA (search, saved/active cities, optional geolocation, per-location cache, stale/fresh, recovery). The owner did not complete final PWA device acceptance. The PWA implementation is intentionally abandoned rather than completed. PWA Phase 4 was never started.
 
-Do not begin Phase 4.
+Native phases restart at Phase 0 in `PHASES.md`. Native Phase 0 is not authorized by this file.
 
 ---
 
@@ -691,8 +691,6 @@ Automated tests, lint, and production build: pass.
 
 # Completion Rule
 
-Phase 3 is complete only when the Phase 3 acceptance criteria and handoff contract in `PHASES.md` are satisfied.
+PWA Phase 3 is stopped/superseded. It is not accepted.
 
-Then STOP.
-
-Do not begin Phase 4.
+Do not complete this PWA phase. Do not begin PWA Phase 4. Do not begin native implementation until Native Phase 0 is explicitly authorized.

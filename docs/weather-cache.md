@@ -1,24 +1,16 @@
 # Weather cache
 
-Latest successful **normalized** `WeatherSnapshot` values are stored per location. Raw OpenWeather HTTP bodies are not cached.
+Latest successful **normalized** weather snapshots are stored per location. Raw OpenWeather HTTP bodies are not cached.
 
-## Database
-
-- Name: `org.radilabs.weather` (not the Phase 0 proof DB `org.radilabs.weather.phase0`)
-- Version: 1
-- Stores: `places` (key `id`), `snapshots` (key `cacheKey`), `kv` (`active`, `order`)
+PWA IndexedDB stores are historical. Native Android must use an on-device store chosen in the authorized phase. The *record shape* below remains the product contract until a native-phase decision replaces it.
 
 ## Snapshot record
 
-```ts
-{
-  cacheKey: string;       // same as Place.cacheKey
-  schemaVersion: 1;
-  provider: "openweather";
-  fetchedAtMs: number;    // Date.now() at successful provider return
-  snapshot: WeatherSnapshot;
-}
-```
+- `cacheKey` — same as `Place.cacheKey`
+- `schemaVersion` — `1` for the prototype contract
+- `provider` — `"openweather"`
+- `fetchedAtMs` — time of successful provider return
+- `snapshot` — application-owned weather snapshot
 
 ## Cache key
 
@@ -32,6 +24,6 @@ Identity is the location `cacheKey` (`lat.toFixed(4):lon.toFixed(4)`). Switching
 
 ## Invalidation / version
 
-`schemaVersion` must equal `1`. Incompatible version, wrong provider string, or malformed snapshot: drop **that row only**. There is no bulk wipe of unrelated places or snapshots.
+Incompatible version, wrong provider string, or malformed snapshot: drop **that row only**. There is no bulk wipe of unrelated places or snapshots.
 
-Future breaking model changes increment `CACHE_SCHEMA_VERSION` in `src/cache/schema.ts` and treat old rows as missing.
+Breaking snapshot-model changes increment schema version and treat old rows as missing.
