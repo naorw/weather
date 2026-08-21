@@ -47,7 +47,7 @@ import org.radilabs.weather.places.placeFromCoordinates
 import org.radilabs.weather.session.SessionView
 import org.radilabs.weather.session.WeatherSession
 import org.radilabs.weather.ui.cities.CitiesScreen
-import org.radilabs.weather.ui.placeholder.PlaceholderScreen
+import org.radilabs.weather.ui.radar.RadarScreen
 import org.radilabs.weather.ui.settings.SettingsScreen
 import org.radilabs.weather.ui.theme.Wx
 import org.radilabs.weather.ui.today.TodayScreen
@@ -167,9 +167,9 @@ fun WeatherRoot(
                     onRefresh = { refresh(session.active()) },
                     footer = "WX / ${active.displayName.uppercase()} / 3-HOUR FREE FORECAST",
                 )
-                Dest.Radar -> PlaceholderScreen(
-                    "Radar",
-                    "Map and radar layers belong to a later phase.",
+                Dest.Radar -> RadarScreen(
+                    place = active,
+                    apiKey = apiKeyStore.read(),
                 )
                 Dest.Cities -> CitiesScreen(
                     saved = saved,

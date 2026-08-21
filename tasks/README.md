@@ -1,10 +1,10 @@
 # Task Execution
 
-Current phase: **none authorized after Native Phase 3**
+Current phase: **none authorized after Native Phase 4**
 
-Native Phase 3 — Locations and Offline is **accepted** (2026-08-21). Evidence: `tasks/phase-3.md`.
+Native Phase 4 — Radar and Maps is **accepted** (2026-08-21). Evidence: `tasks/phase-4.md`.
 
-Do not create `tasks/phase-4.md`. Do not begin Native Phase 4. Do not implement Radar.
+Do not create `tasks/phase-5.md`. Do not begin Native Phase 5.
 
 Historical `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md` are PWA prototype evidence only. Do not execute them.
 
@@ -25,7 +25,7 @@ Historical `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md` are PWA prototype e
 
 ## Current Execution
 
-No native phase is authorized after Native Phase 3 acceptance.
+No native phase is authorized after Native Phase 4 acceptance.
 
 Historical native task files:
 
@@ -33,6 +33,7 @@ Historical native task files:
 * `tasks/phase-1.md`
 * `tasks/phase-2.md`
 * `tasks/phase-3.md`
+* `tasks/phase-4.md`
 
 Historical PWA task files (do not execute):
 
@@ -43,45 +44,4 @@ Historical PWA task files (do not execute):
 
 Do not reopen PWA work.
 
-Do not reopen completed native phase work unless the current authorized phase explicitly requires a compatible change.
-
-## Source of Truth
-
-When instructions appear to conflict, use this precedence:
-
-1. `PROJECT.md` — product definition and factory rules
-2. `PHASES.md` — immutable phase contracts
-3. `TASKS.md` — currently authorized phase
-4. current `tasks/phase-NUMBER.md` — implementation tasks
-
-Implementation choices must remain inside all higher-level constraints.
-
-Native Android (`decisions/0017-native-android-platform.md`) governs v1. Historical PWA decisions remain in `decisions/` but are superseded where that record says so.
-
-## Information Placement
-
-Use:
-
-* `decisions/` for durable choices, constraints, rejections, and compatibility commitments future work must respect
-* `docs/` for durable technical knowledge, API behavior, schemas, cache/invalidation rules, setup procedures, visual-system rules, and operational knowledge
-* current phase task file for implementation progress, tests, results, changed files, temporary findings, known limitations, and deferred work
-
-If forgetting information could cause a future agent to make a wrong implementation choice, record it.
-
-Otherwise, don't.
-
-## Phase 3 Boundaries (historical)
-
-Phase 3 owned search, saved cities, active location, optional device location, per-location weather cache, stale/offline, recovery, and race safety.
-
-It did not own radar/maps, notifications, WorkManager, polling, accounts, cloud sync, location history, or background location.
-
-## After Phase Authorization
-
-Once the owner/planner explicitly authorizes Native Phase 4:
-
-* create only `tasks/phase-4.md`
-* update `TASKS.md` to name that phase
-* update the current phase listed in this file
-
-The implementation agent must not perform this authorization by itself.
+The implementation agent must not authorize Phase 5.

@@ -16,7 +16,7 @@ Settings → OpenWeather key:
 
 The full key is not shown after save.
 
-`ApiKeyStore.read()` returns the plaintext for OpenWeather requests. Phase 1 sends it only as the `appid` query parameter to `api.openweathermap.org`. It is never written into source, Gradle, `BuildConfig`, or logs.
+`ApiKeyStore.read()` returns the plaintext for OpenWeather requests. Weather APIs send it as `appid` to `api.openweathermap.org`. Radar overlay tiles send it as `appid` to `tile.openweathermap.org`. It is never written into source, Gradle, `BuildConfig`, or logs.
 
 Installing a Phase 1 APK over Phase 0 keeps the same `applicationId` and prefs file (`weather_secrets`), so a saved key survives the update.
 

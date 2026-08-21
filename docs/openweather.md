@@ -18,7 +18,9 @@ Native HTTP: OkHttp, 15s connect / 20s read / 25s call timeout. Base `https://ap
 
 Weather query parameters: `lat`, `lon`, `units=metric`, `appid`. Direct geocoding: `q`, `limit=5`, `appid`. Reverse: `lat`, `lon`, `limit=1`, `appid`.
 
-Not used: One Call 3.0, paid daily/16-day forecast, history, maps.
+Not used: One Call 3.0, paid daily/16-day forecast, history, Weather Maps 2.0.
+
+Weather Maps 1.0 raster tiles (`precipitation_new`, `clouds_new`) are used by Radar only. See `docs/radar.md` and `decisions/0022-weather-map-overlay.md`.
 
 Captured response examples: `docs/fixtures/openweather/`.
 

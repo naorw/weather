@@ -10,9 +10,10 @@ Kotlin + Jetpack Compose. The earlier PWA is a completed prototype in Git histor
 
 ## Product
 
-- Current conditions, hourly forecast, and the multi-day horizon available on the free plan
+- Current conditions, 3-hour forecast steps, and the multi-day horizon available on the free plan
 - Optional device location, city search, and saved cities
 - Local caching with explicit stale-state handling
+- Map instrument with OpenWeather precipitation / cloud-cover map overlays (not observed radar)
 - Runtime locally configured OpenWeather credential
 - Native APK, GrapheneOS / Pixel first
 
@@ -26,9 +27,9 @@ Primary screens: **Today**, **Radar**, **Cities**, **Settings**.
 
 ## Status
 
-Native **Phase 0 — Android Foundation** is **accepted** (2026-08-21). Phase 1 is not authorized.
+Native **Phase 4 — Radar and Maps** is **accepted** (2026-08-21). Phase 5 is not authorized.
 
-See `PROJECT.md`, `PHASES.md`, `tasks/phase-0.md`, and `docs/development.md`.
+See `PROJECT.md`, `PHASES.md`, `tasks/phase-4.md`, and `docs/development.md`.
 
 ## Layout
 

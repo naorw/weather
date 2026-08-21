@@ -9,7 +9,7 @@ The installed native application must launch without a network. Use local persis
 - If there is no cache, Today shows empty/error offline state. It does not invent zeros.
 - Failed refresh does not erase cache. There is no request polling loop.
 
-## Recovery (no background sync)
+Radar is not an offline map product. Airplane mode must not break cached Today. MapLibre may show already-cached tiles if any; do not claim offline maps.
 
 ## Recovery (no background sync)
 

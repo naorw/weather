@@ -108,3 +108,4 @@ Install the APK with `adb` (or copy the file to the device). Confirm:
 3. Today shows the graphite instrument
 4. Bottom nav: Today / Radar / Cities / Settings
 5. Settings can save a key; relaunch still shows configured; Remove clears it
+6. Radar: dark map, active place, PRECIP MAP overlay with a key; no Play Services
