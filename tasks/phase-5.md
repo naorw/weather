@@ -2,9 +2,11 @@
 
 ## Status
 
-**Implemented / awaiting owner Pixel / GrapheneOS acceptance.** v0.1.0 is a release **candidate**, not tagged.
+**Accepted** 2026-08-21 on Pixel / GrapheneOS. First public release **Weather v0.1.0** is authorized for publication.
 
-Do not begin a later phase. Do not tag `v0.1.0` until the owner accepts and a production-signed APK exists.
+Remaining non-blocking polish and extra testing is deferred to **v0.1.1** or a future explicitly authorized phase.
+
+Do not begin Phase 6. Do not create `tasks/phase-6.md`.
 
 ---
 

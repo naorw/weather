@@ -27,9 +27,9 @@ Primary screens: **Today**, **Radar**, **Cities**, **Settings**.
 
 ## Status
 
-Native **Phase 4 — Radar and Maps** is **accepted** (2026-08-21). Native **Phase 5 — Daily-Use Polish** is authorized (v0.1.0 candidate, not tagged).
+Native **Phase 5 — Daily-Use Polish** is **accepted** (2026-08-21). First public release: **Weather v0.1.0**. No later phase is authorized.
 
-See `PROJECT.md`, `PHASES.md`, `tasks/phase-5.md`, `docs/signing.md`, and `docs/development.md`.
+See `PROJECT.md`, `PHASES.md`, `docs/handoffs/phase-5.md`, `docs/signing.md`, and `docs/development.md`.
 
 ## Layout
 

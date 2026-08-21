@@ -2,9 +2,11 @@
 
 Date: 2026-08-21
 
-Status: **implemented / awaiting owner acceptance**
+Accepted: 2026-08-21
 
-Do not tag `v0.1.0`. Do not create the GitHub Release until the owner accepts and confirms the production-signed install path.
+Status: **accepted**
+
+First public release **Weather v0.1.0** is authorized. Remaining non-blocking polish is deferred to **v0.1.1** or a later authorized phase. Do not begin Phase 6.
 
 ## Release candidate version
 
@@ -22,8 +24,7 @@ Medium taken: atomic cache write; cancellable location; exhaustive Today `when`;
 
 ## Findings deferred
 
-* **H-6 R8/minify:** evaluated and **left off**. APK size is dominated by MapLibre native `.so` files. Enabling R8 without device confirmation of MapLibre + Gson is an unnecessary v0.1.0 risk. Keep rules exist in `app/proguard-rules.pro` for later.
-* **Production-signed APK / SHA256:** signing config is required, but **no production keystore exists on this machine** and none was generated. Owner must follow `docs/signing.md`, then `./gradlew :app:prepareReleaseArtifact`.
+* **H-6 R8/minify:** evaluated and **left off** for v0.1.0. Deferred to v0.1.1 or later if desired.
 * Extra Maps 1.0 layers, observed radar, broader code audit, ABI splits.
 
 ## Lifecycle
@@ -44,64 +45,42 @@ Startup still does one live fetch. Returning to Today or connectivity `onAvailab
 
 ## Release signing state
 
-**Path established. Artifact not built.** `assembleRelease` fails until `weather.release.*` is set in gitignored `local.properties` (or env vars). See `docs/signing.md`.
+Production signing is configured locally via gitignored `local.properties`. Release APKs are production-signed. Debug-key fallback is refused.
 
-First production install **cannot** overlay Phase 0–4 debug-signed apps. Uninstall wipes key/cities/cache.
+First production install **cannot** overlay Phase 0–4 debug-signed apps. Uninstall wipes key/cities/cache. Future 0.1.x upgrades must reuse this production key.
 
 ## APK path
 
-* Debug (this session): `app/build/outputs/apk/debug/app-debug.apk` — version 0.1.0 / 6, debug-signed. For development only.
-* Production: `dist/weather-v0.1.0.apk` after owner configures the keystore and runs `:app:prepareReleaseArtifact`.
+* Production (gitignored local copy): `dist/weather-v0.1.0.apk`
+* Checksums: `dist/SHA256SUMS`
+* Published on the GitHub Release for tag `v0.1.0`
 
 ## SHA256
 
-Not generated. Requires the production APK.
+`a0f72dc8d1de70ef023abdcb85e975fbf1bfd756597f9fa771849b48e97c10e7`  `weather-v0.1.0.apk`
+
+Production signer certificate SHA-256: `3b1cc5f0dab2e0109298bb19543fd22550f46befa6df2e05bee071d454db06c4` (CN=Naor W, OU=Radi Labs, O=Forthscale). Not the Android debug certificate.
 
 ## Tests / results
 
 ```sh
-./gradlew :app:testDebugUnitTest :app:assembleDebug
+./gradlew :app:testDebugUnitTest :app:prepareReleaseArtifact
 ```
 
-**PASS.** Includes cache write failure, atomic write, skip-automatic-refresh, MapView attach order, `toWeatherError`, AppVersion label, prior Phase 0–4 tests.
+**PASS** (2026-08-21). Production APK verifies (APK Signature Scheme v2). `reviews/` gitignored. No API key or signing secret in Git or the APK.
 
-`./gradlew :app:assembleRelease` **fails as designed** without signing config.
+## Pixel / GrapheneOS owner validation
 
-`reviews/` is gitignored. No signing secret in Git. Prefs key name `openweather_api_key` appears as a string; no live API key is embedded.
+Owner accepted Native Phase 5 on Pixel / GrapheneOS (2026-08-21). Remaining non-blocking polish/testing is deferred to v0.1.1.
 
-## Pixel / GrapheneOS checks remaining
+## GitHub Release
 
-After creating the keystore and building `dist/weather-v0.1.0.apk`:
-
-1. Uninstall debug-signed Weather if present
-2. Install production APK; confirm signature
-3. Version `0.1.0` in Settings
-4. Today / Cities / Radar / Settings together
-5. Load + Refresh
-6. Saved cities + device location
-7. Airplane cached Today
-8. Reconnect does not thrash when cache is fresh; STALE still recovers
-9. Radar tab switches repeatedly
-10. Precip/cloud overlays
-11. Key save/remove
-12. Denied location remains graceful
-13. Font scaling usable
-14. Visual coherence
-15. No crash in daily regression
-
-## GitHub Release readiness
-
-Prepared but **not published**:
-
-* Tag name: `v0.1.0`
-* Title: `Weather v0.1.0`
-* Assets: `weather-v0.1.0.apk`, `SHA256SUMS`
-* Notes: first native Android release; Today instrument; saved + device location; cached offline weather; precip/cloud map (not observed radar); local OpenWeather key; GrapheneOS/Pixel; known limits in `docs/`
+Published as **Weather v0.1.0** after this acceptance commit is tagged.
 
 ## Known limitations
 
 * Maps 1.0 is not observed radar
 * No offline map product
-* R8 off
-* Production APK pending owner keystore
+* R8 off (deferred)
 * Uninstall required for debug→production signature change
+* No background periodic sync, notifications, widgets, or accounts
