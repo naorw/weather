@@ -23,9 +23,24 @@ Primary screens: **Today**, **Radar**, **Cities**, **Settings**.
 
 ## Status
 
-Repository scaffold is in place. Application code is not implemented yet.
+Phase 0 (PWA foundation) is **accepted** (2026-08-21; local + Pixel). Weather data is still static/fake. Provider integration is Phase 1 and is not authorized yet.
 
-See `PROJECT.md` for product intent and `PHASES.md` for phase contracts.
+See `PROJECT.md` for product intent, `PHASES.md` for phase contracts, and `docs/development.md` for commands.
+
+## Quick start
+
+```sh
+npm install
+npm run dev
+```
+
+Production / PWA check:
+
+```sh
+npm test
+npm run build
+npm run preview
+```
 
 ## Layout
 
