@@ -25,18 +25,33 @@ function walk(dir: string): string[] {
   return files;
 }
 
-describe("phase 0 scope", () => {
-  it("does not include later-phase weather provider or location features", () => {
-    const source = walk(join(root, "src"))
-      .concat([join(root, "index.html")])
-      .filter((path) => /\.(ts|js|html|css)$/.test(path))
-      .map((path) => readFileSync(path, "utf8"))
-      .join("\n")
-      .toLowerCase();
+function read(paths: string[]): string {
+  return paths
+    .filter((path) => /\.(ts|js|html|css)$/.test(path))
+    .map((path) => readFileSync(path, "utf8"))
+    .join("\n")
+    .toLowerCase();
+}
 
-    expect(source).not.toMatch(/openweather/);
-    expect(source).not.toMatch(/api\.openweathermap/);
+describe("phase 1 scope", () => {
+  it("does not add later-phase location or paid-api features", () => {
+    const source = read(walk(join(root, "src")).concat([join(root, "index.html")]));
     expect(source).not.toMatch(/geolocation/);
     expect(source).not.toMatch(/navigator\.geolocation/);
+    expect(source).not.toMatch(/onecall/);
+    expect(source).not.toMatch(/\/data\/3\.0\//);
+    expect(source).not.toMatch(/pro\.openweathermap/);
+  });
+
+  it("keeps OpenWeather URLs inside the provider client", () => {
+    const ui = read([
+      join(root, "src", "app.ts"),
+      join(root, "src", "main.ts"),
+      join(root, "src", "screens", "today.ts"),
+      join(root, "src", "screens", "placeholder.ts"),
+      join(root, "src", "screens", "settings.ts"),
+    ]);
+    expect(ui).not.toMatch(/api\.openweathermap/);
+    expect(ui).not.toMatch(/\/data\/2\.5\//);
   });
 });

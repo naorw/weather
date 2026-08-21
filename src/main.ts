@@ -1,4 +1,3 @@
-import { registerSW } from "virtual:pwa-register";
 import { mount } from "./app";
 import "./styles/tokens.css";
 import "./styles/base.css";
@@ -10,6 +9,18 @@ if (!(root instanceof HTMLElement)) {
   throw new Error("Missing #app root");
 }
 
-mount(root);
+async function start(): Promise<void> {
+  if (import.meta.env.DEV && "serviceWorker" in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+  }
 
-registerSW({ immediate: true });
+  mount(root);
+
+  if (!import.meta.env.DEV) {
+    const { registerSW } = await import("virtual:pwa-register");
+    registerSW({ immediate: true });
+  }
+}
+
+void start();

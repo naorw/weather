@@ -9,14 +9,15 @@ Current structure:
 ```text
 tasks/
 ├── README.md
-└── phase-0.md
+├── phase-0.md
+└── phase-1.md
 ```
 
 Last completed phase:
 
-**Phase 0 — PWA Foundation** — accepted 2026-08-21 (`tasks/phase-0.md`).
+**Phase 1 — Weather Data** — accepted 2026-08-21 (`tasks/phase-1.md`).
 
-No later phase is authorized yet. Do not create or execute Phase 1 tasks until that phase is explicitly opened.
+No later phase is authorized yet. Do not create or execute Phase 2 tasks until that phase is explicitly opened.
 
 The phase roadmap and immutable contracts live in `PHASES.md`.
 

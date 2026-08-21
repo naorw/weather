@@ -93,10 +93,34 @@ Programmatic reset is `resetStore()` in `src/storage.ts`.
 
 This database is not a weather cache.
 
+## Weather data probe (Phase 1)
+
+Copy `.env.example` to `.env` and set `VITE_OPENWEATHER_API_KEY`. See `docs/credentials.md`.
+
+After creating or changing `.env`:
+
+- `npm run dev`: stop the process and start it again, or press `r` in the Vite terminal. A browser refresh alone does **not** reload env. You do **not** need `npm run build`.
+- `npm run preview` / installed production build: run `npm run build` again so the key is inlined, then preview.
+
+Dev (`npm run dev`) proxies `/ow` to OpenWeather so a phone on the LAN only needs to reach your computer. Production still calls `api.openweathermap.org` directly.
+
+Firefox: `localhost` and `http://192.168.x.x:5173` are **different origins**. Cache Storage can show the LAN IP with empty caches; that is not IndexedDB. Unregister service workers for **both** hosts (about:serviceworkers). Then Ctrl+Shift+R.
+
+- Settings → **Fetch Stockholm weather** retrieves current, forecast, and air quality through the provider boundary.
+- Optional live test: `npm test` runs `tests/weather/live.test.ts` when that env var is set.
+- The Today screen remains the Phase 0 static snapshot.
+
+If the probe says `network`, the key was probably loaded (missing key is `auth`). A URL that works in the address bar is not the same as `fetch()` from the app.
+
+Firefox: never pass a detached `fetch` reference; call `globalThis.fetch(...)`. A leftover service worker on `localhost` vs a LAN IP is a different origin.
+
+Owner live check (2026-08-21): Stockholm current, 40-point forecast, 6 aggregated days, air quality fair.
+
 ## Browser limitations discovered
 
 - `npm run dev` does not represent production service-worker behavior. Always verify offline shell on `preview`.
 - Hash routing (`#/today`) avoids server rewrite configuration for GitHub Pages-style static hosts.
 - Standalone install and `beforeinstallprompt` availability vary by Android browser. Vanadium / Chromium is the intended path.
 - System fonts differ across GrapheneOS and stock Android; tabular numbers depend on the UI face.
-- `apple-touch-icon` is present for completeness; iOS is not a v1 target.
+- Firefox requires `window.fetch`; a copied `fetch` function throws TypeError.
+- OpenWeather CORS/OPTIONS is unreliable from the browser; Vite `/ow` proxy is used on local hosts.

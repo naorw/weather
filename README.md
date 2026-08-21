@@ -23,7 +23,7 @@ Primary screens: **Today**, **Radar**, **Cities**, **Settings**.
 
 ## Status
 
-Phase 0 (PWA foundation) is **accepted** (2026-08-21; local + Pixel). Weather data is still static/fake. Provider integration is Phase 1 and is not authorized yet.
+Phase 0 (PWA foundation) and Phase 1 (weather data) are **accepted** (2026-08-21). The Today screen is still static. Phase 2 is not authorized yet.
 
 See `PROJECT.md` for product intent, `PHASES.md` for phase contracts, and `docs/development.md` for commands.
 
