@@ -1,5 +1,6 @@
 package org.radilabs.weather.ui.today
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -25,15 +26,40 @@ import org.radilabs.weather.ui.theme.Wx
 import kotlin.math.max
 
 @Composable
-fun TodayScreen(snapshot: TodaySnapshot = sampleStockholm) {
-    val dayMin = snapshot.days.minOf { it.lowC }
-    val dayMax = snapshot.days.maxOf { it.highC }
+fun TodayScreen(
+    state: TodayUiState,
+    onRefresh: () -> Unit,
+) {
+    val snapshot = (state as? TodayUiState.Ready)?.snapshot
+    val dayMin = snapshot?.days?.minOfOrNull { it.lowC }
+    val dayMax = snapshot?.days?.maxOfOrNull { it.highC }
     Column(
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = Wx.space4, vertical = Wx.space3),
     ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            StatusLine(state)
+            Text(
+                "REFRESH",
+                color = Wx.accent,
+                fontSize = Wx.nav,
+                letterSpacing = 1.5.sp,
+                modifier = Modifier
+                    .height(Wx.touchMin)
+                    .clickable(onClick = onRefresh)
+                    .padding(horizontal = Wx.space2, vertical = Wx.space3),
+            )
+        }
+        if (snapshot == null) {
+            Spacer(Modifier.height(Wx.space6))
+            return@Column
+        }
         Text(
             text = snapshot.location.uppercase(),
             color = Wx.accent,
@@ -59,7 +85,7 @@ fun TodayScreen(snapshot: TodaySnapshot = sampleStockholm) {
         )
         Spacer(Modifier.height(Wx.space2))
         Text(
-            "H ${snapshot.highC}°   L ${snapshot.lowC}°   FEELS ${snapshot.feelsLikeC}°",
+            "H ${deg(snapshot.highC)}   L ${deg(snapshot.lowC)}   FEELS ${snapshot.feelsLikeC}°",
             color = Wx.text,
             fontSize = Wx.value,
         )
@@ -113,8 +139,8 @@ fun TodayScreen(snapshot: TodaySnapshot = sampleStockholm) {
                 RangeBar(
                     low = day.lowC,
                     high = day.highC,
-                    scaleMin = dayMin,
-                    scaleMax = dayMax,
+                    scaleMin = dayMin ?: day.lowC,
+                    scaleMax = dayMax ?: day.highC,
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = Wx.space2),
@@ -131,7 +157,7 @@ fun TodayScreen(snapshot: TodaySnapshot = sampleStockholm) {
         AtmosphereRow("VISIBILITY", snapshot.visibility)
         Spacer(Modifier.height(Wx.space6))
         Text(
-            "WX / STATIC SAMPLE / NO NETWORK",
+            "WX / STOCKHOLM / OPENWEATHER FREE",
             color = Wx.disabled,
             fontSize = Wx.meta,
             letterSpacing = 1.5.sp,
@@ -139,6 +165,18 @@ fun TodayScreen(snapshot: TodaySnapshot = sampleStockholm) {
         Spacer(Modifier.height(Wx.space4))
     }
 }
+
+@Composable
+private fun StatusLine(state: TodayUiState) {
+    val (color, text) = when (state) {
+        TodayUiState.Loading -> Wx.amber to "ACQUIRING WEATHER"
+        is TodayUiState.Ready -> Wx.textMuted to "LIVE"
+        is TodayUiState.Failed -> Wx.warning to "${state.error.title.uppercase()} · ${state.error.message}"
+    }
+    Text(text, color = color, fontSize = Wx.meta, modifier = Modifier.fillMaxWidth(0.72f))
+}
+
+private fun deg(value: Int?): String = if (value == null) "—" else "$value°"
 
 @Composable
 private fun Label(text: String) {

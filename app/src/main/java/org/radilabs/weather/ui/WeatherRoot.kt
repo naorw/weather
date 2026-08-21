@@ -17,23 +17,52 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.radilabs.weather.persist.ApiKeyStore
 import org.radilabs.weather.ui.placeholder.PlaceholderScreen
 import org.radilabs.weather.ui.settings.SettingsScreen
 import org.radilabs.weather.ui.theme.Wx
 import org.radilabs.weather.ui.today.TodayScreen
+import org.radilabs.weather.ui.today.TodayUiState
+import org.radilabs.weather.ui.today.presentSnapshot
+import org.radilabs.weather.weather.STOCKHOLM
+import org.radilabs.weather.weather.WeatherError
+import org.radilabs.weather.weather.WeatherProvider
 
 @Composable
-fun WeatherRoot(apiKeyStore: ApiKeyStore) {
+fun WeatherRoot(apiKeyStore: ApiKeyStore, provider: WeatherProvider) {
     var dest by remember { mutableStateOf(Dest.Today) }
+    var today by remember { mutableStateOf<TodayUiState>(TodayUiState.Loading) }
+    val scope = rememberCoroutineScope()
+    fun load() {
+        today = TodayUiState.Loading
+        scope.launch {
+            today = withContext(Dispatchers.IO) {
+                try {
+                    TodayUiState.Ready(presentSnapshot(provider.getSnapshot(STOCKHOLM)))
+                } catch (error: WeatherError) {
+                    TodayUiState.Failed(error)
+                } catch (error: Exception) {
+                    TodayUiState.Failed(
+                        WeatherError(WeatherError.Code.Unknown, "Weather request failed.", cause = error),
+                    )
+                }
+            }
+        }
+    }
+    LaunchedEffect(Unit) { load() }
     Column(
         Modifier
             .fillMaxSize()
@@ -58,7 +87,7 @@ fun WeatherRoot(apiKeyStore: ApiKeyStore) {
         )
         Box(Modifier.weight(1f).fillMaxWidth()) {
             when (dest) {
-                Dest.Today -> TodayScreen()
+                Dest.Today -> TodayScreen(state = today, onRefresh = { load() })
                 Dest.Radar -> PlaceholderScreen(
                     "Radar",
                     "Map and radar layers belong to a later phase.",

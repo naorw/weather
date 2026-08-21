@@ -1,0 +1,15 @@
+{
+  "coord": { "lon": 18.0686, "lat": 59.3293 },
+  "weather": [{ "id": 800, "main": "Clear", "description": "clear sky", "icon": "01d" }],
+  "main": {
+    "temp": 10,
+    "feels_like": 10,
+    "pressure": 1000,
+    "humidity": 40
+  },
+  "wind": { "speed": 1 },
+  "dt": 1724260800,
+  "timezone": 0,
+  "name": "Stockholm",
+  "cod": 200
+}

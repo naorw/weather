@@ -36,7 +36,8 @@ Output:
 
 ## Release-like APK
 
-There is no production signing keystore in Phase 0.
+There is no production signing keystore yet.
+
 
 `assembleRelease` produces an installable APK signed with the **debug keystore**. Treat it as a release-like artifact, not a store-ready signed build.
 

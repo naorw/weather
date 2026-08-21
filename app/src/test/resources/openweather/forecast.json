@@ -1,0 +1,90 @@
+{
+  "cod": "200",
+  "message": 0,
+  "cnt": 4,
+  "list": [
+    {
+      "dt": 1724266800,
+      "main": {
+        "temp": 13.5,
+        "feels_like": 12.4,
+        "temp_min": 13.0,
+        "temp_max": 14.0,
+        "pressure": 1013,
+        "humidity": 74
+      },
+      "weather": [
+        {
+          "id": 500,
+          "main": "Rain",
+          "description": "light rain",
+          "icon": "10n"
+        }
+      ],
+      "clouds": { "all": 80 },
+      "wind": { "speed": 3.2, "deg": 250, "gust": 5.1 },
+      "visibility": 9000,
+      "pop": 0.4,
+      "rain": { "3h": 0.31 },
+      "dt_txt": "2024-08-21 18:00:00"
+    },
+    {
+      "dt": 1724277600,
+      "main": {
+        "temp": 11.2,
+        "feels_like": 10.1,
+        "temp_min": 11.0,
+        "temp_max": 11.5,
+        "pressure": 1012,
+        "humidity": 80
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": { "all": 100 },
+      "wind": { "speed": 2.8, "deg": 260 },
+      "visibility": 10000,
+      "pop": 0.1,
+      "dt_txt": "2024-08-21 21:00:00"
+    },
+    {
+      "dt": "bad",
+      "main": { "temp": 99 },
+      "weather": [{ "id": 800, "main": "Clear", "description": "clear sky" }]
+    },
+    {
+      "dt": 1724288400,
+      "main": {
+        "temp": 10.4,
+        "feels_like": 9.6,
+        "pressure": 1011,
+        "humidity": 82
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01n"
+        }
+      ],
+      "wind": { "speed": 2.1, "deg": 270 },
+      "pop": 0,
+      "dt_txt": "2024-08-22 00:00:00"
+    }
+  ],
+  "city": {
+    "id": 2673730,
+    "name": "Stockholm",
+    "coord": { "lat": 59.3293, "lon": 18.0686 },
+    "country": "SE",
+    "timezone": 7200,
+    "sunrise": 1724212345,
+    "sunset": 1724267890
+  }
+}

@@ -14,7 +14,9 @@ Base: `https://api.openweathermap.org`
 | Direct geocoding | `/geo/1.0/direct` |
 | Reverse geocoding | `/geo/1.0/reverse` |
 
-Weather query parameters: `lat`, `lon`, `units=metric`, `appid`. Geocoding uses `q`+`limit` (direct) or `lat`/`lon`+`limit` (reverse), and `appid`. Limit is 5 for search and 1 for reverse.
+Weather query parameters: `lat`, `lon`, `units=metric`, `appid`. Geocoding is **not** called in Native Phase 1.
+
+Native HTTP: OkHttp, 15s connect / 20s read / 25s call timeout. Base `https://api.openweathermap.org`. Query parameters are built by OkHttp; URLs with `appid` are not logged. `redactSecrets` replaces `appid=…` if a URL ever appears in an error string.
 
 Not used: One Call 3.0, paid daily/16-day forecast, history, maps.
 

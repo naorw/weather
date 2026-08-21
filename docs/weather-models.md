@@ -2,7 +2,9 @@
 
 Application code consumes application-owned models. OpenWeather payloads stay inside the provider client.
 
-The PWA types lived in `src/weather/models.ts`; native Kotlin types must match this contract unless a later decision changes it.
+The Kotlin types live in `org.radilabs.weather.weather`. OpenWeather payloads stay inside `org.radilabs.weather.weather.openweather` (`decisions/0019-native-provider-boundary.md`).
+
+The PWA types lived in `src/weather/models.ts`; native Kotlin types match this contract unless a later decision changes it.
 
 ## Canonical units
 
@@ -44,8 +46,8 @@ Unknown OpenWeather ids map to `unknown`. UI must use this vocabulary, not numer
 
 `WeatherProvider` shape:
 
-- `getCurrent`
-- `getForecast`
-- `getAirQuality`
-- `getSnapshot` — one current + one forecast + one air request; air failure (except auth) leaves `airQuality` unset
-- geocoding as needed by the locations phase (`searchPlaces`, `reverseGeocode`)
+- `getSnapshot` — one current + one forecast + one air request; air failure (except auth / missing key) leaves `airQuality` unset
+
+Geocoding (`searchPlaces`, `reverseGeocode`) belongs to the locations phase, not Phase 1.
+
+Phase 1 uses a single fixed coordinate: Stockholm `59.3293, 18.0686` (`STOCKHOLM`).

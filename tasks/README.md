@@ -1,10 +1,10 @@
 # Task Execution
 
-Current phase: **none authorized after Native Phase 0**
+Current phase: **none authorized after Native Phase 1**
 
-Native Phase 0 — Android Foundation is **accepted** (2026-08-21). Evidence: `tasks/phase-0.md`.
+Native Phase 1 — Weather Data is **accepted** (2026-08-21). Evidence: `tasks/phase-1.md`.
 
-Do not create `tasks/phase-1.md`. Do not begin Native Phase 1.
+Do not create `tasks/phase-2.md`. Do not begin Native Phase 2.
 
 Historical `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md` are PWA prototype evidence only. Do not execute them.
 
@@ -25,11 +25,12 @@ Historical `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md` are PWA prototype e
 
 ## Current Execution
 
-No native phase is authorized after Native Phase 0 acceptance.
+No native phase is authorized after Native Phase 1 acceptance.
 
 Historical native task files:
 
 * `tasks/phase-0.md`
+* `tasks/phase-1.md`
 
 Historical PWA task files (do not execute):
 
@@ -67,33 +68,17 @@ If forgetting information could cause a future agent to make a wrong implementat
 
 Otherwise, don't.
 
-## Phase 0 Boundaries
+## Phase 1 Boundaries (historical)
 
-Phase 0 owns:
+Phase 1 owned OpenWeather free current / 3-hour forecast / air pollution, normalized models, aggregation, stable errors, the Phase 0 runtime key, and minimal Stockholm Today wiring.
 
-* Kotlin + Jetpack Compose application
-* APK build/install/debug workflow
-* application identity
-* static Today design-language baseline
-* navigation shell
-* local persistence proof
-* runtime API-key configuration (no network)
-
-Phase 0 must not implement:
-
-* OpenWeather network calls
-* geolocation
-* city search / saved cities
-* weather cache
-* radar/maps
-* notifications / widgets / WorkManager
-* accounts / analytics / AI / cloud sync
+It did not own geolocation, cities, cache, radar, Phase 2 UI, paid APIs, or provider plugins.
 
 ## After Phase Authorization
 
-Once the owner/planner explicitly authorizes Native Phase 1:
+Once the owner/planner explicitly authorizes Native Phase 2:
 
-* create only `tasks/phase-1.md`
+* create only `tasks/phase-2.md`
 * update `TASKS.md` to name that phase
 * update the current phase listed in this file
 

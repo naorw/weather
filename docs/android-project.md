@@ -1,17 +1,16 @@
 # Android project
 
-Single module `:app`. Package `org.radilabs.weather`. Version `0.0.0` / versionCode `1`.
+Single module `:app`. Package `org.radilabs.weather`. Version `0.1.0` / versionCode `2`.
 
 ```
 app/src/main/java/org/radilabs/weather/
   MainActivity.kt
   persist/ApiKeyStore.kt
-  ui/WeatherRoot.kt          # shell + bottom nav
-  ui/Dest.kt
-  ui/today/                  # static instrument
-  ui/settings/               # runtime key
-  ui/placeholder/
-  ui/theme/                  # Wx tokens
+  weather/                   # application-owned models, errors, aggregation
+  weather/openweather/       # HTTP + JSON mapping
+  ui/WeatherRoot.kt
+  ui/today/                  # Today presentation + live Stockholm wiring
+  ui/settings/
 ```
 
 Gradle:
@@ -19,11 +18,10 @@ Gradle:
 - Android Gradle Plugin 8.13.2
 - Kotlin 2.1.10
 - compileSdk / targetSdk 35
-- minSdk 29 (GrapheneOS / Pixel-era Android 10+)
-- Compose BOM `2025.08.01` (pinned so compileSdk 35 / AGP 8.13 stay compatible)
+- minSdk 29
+- Compose BOM `2025.08.01`
+- OkHttp 4.12.0
 
-No Hilt, no Navigation component, no network library, no INTERNET permission.
+Permission: `INTERNET` only (plus AndroidX's internal dynamic-receiver permission). No location permission.
 
 Release builds use the debug signing config until a production keystore exists.
-
-See `docs/development.md` for commands.

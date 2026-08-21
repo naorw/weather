@@ -88,7 +88,7 @@ fun SettingsScreen(store: ApiKeyStore) {
             }
         }
         Spacer(Modifier.height(Wx.space6))
-        Text("Weather 0.0.0 · org.radilabs.weather", color = Wx.disabled, fontSize = Wx.meta)
+        Text("Weather 0.1.0 · org.radilabs.weather", color = Wx.disabled, fontSize = Wx.meta)
         Spacer(Modifier.height(Wx.space2))
         Text("Units and provider UI belong to later phases.", color = Wx.textMuted, fontSize = Wx.body)
     }
