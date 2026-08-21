@@ -134,6 +134,27 @@ class OpenWeatherProviderTest {
         }
     }
 
+    @Test
+    fun searchMapsDistinctPlaces() {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setBody(read("geo-direct.json")))
+        server.start()
+        try {
+            val provider = OpenWeatherProvider(
+                getApiKey = { "k" },
+                http = OkHttpClient(),
+                origin = server.url("/").newBuilder().encodedPath("/").build(),
+            )
+            val hits = provider.searchPlaces("Stockholm")
+            assertEquals(2, hits.size)
+            assertEquals("SE", hits[0].country)
+            assertEquals("Wisconsin", hits[1].region)
+            assertTrue(hits[0].cacheKey != hits[1].cacheKey)
+        } finally {
+            server.shutdown()
+        }
+    }
+
     private fun read(name: String): String {
         return javaClass.classLoader!!.getResourceAsStream("openweather/$name")!!.bufferedReader().readText()
     }

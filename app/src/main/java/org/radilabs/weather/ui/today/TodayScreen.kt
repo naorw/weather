@@ -35,6 +35,7 @@ import org.radilabs.weather.weather.WeatherError
 fun TodayScreen(
     state: TodayUiState,
     onRefresh: () -> Unit,
+    footer: String = "WX / 3-HOUR FREE FORECAST",
 ) {
     val ready = state as? TodayUiState.Ready
     val snapshot = ready?.snapshot
@@ -86,7 +87,7 @@ fun TodayScreen(
         }
         Spacer(Modifier.height(Wx.space6))
         Text(
-            "WX / STOCKHOLM / 3-HOUR FREE FORECAST",
+            footer,
             color = Wx.disabled,
             fontSize = Wx.meta,
             letterSpacing = 1.5.sp,
@@ -107,7 +108,10 @@ private fun StatusRow(state: TodayUiState, onRefresh: () -> Unit) {
             is TodayUiState.Ready -> when {
                 state.acquiring -> Wx.amber to "ACQUIRING WEATHER"
                 state.note != null -> Wx.amber to state.note
-                else -> Wx.textMuted to "LIVE"
+                else -> {
+                    val live = state.statusLine == "LIVE"
+                    (if (live) Wx.textMuted else Wx.amber) to state.statusLine
+                }
             }
             is TodayUiState.Failed -> Wx.warning to state.error.title.uppercase()
         }

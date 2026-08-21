@@ -12,6 +12,7 @@ tasks/
 ├── phase-0.md          # Native Phase 0 — accepted
 ├── phase-1.md          # Native Phase 1 — accepted
 ├── phase-2.md          # Native Phase 2 — accepted
+├── phase-3.md          # Native Phase 3 — accepted
 └── pwa/
     ├── phase-0.md
     ├── phase-1.md
@@ -21,17 +22,18 @@ tasks/
 
 Last completed native phase:
 
-**Native Phase 2 — Weather Instrument** — accepted 2026-08-21 (`tasks/phase-2.md`).
+**Native Phase 3 — Locations and Offline** — accepted 2026-08-21 (`tasks/phase-3.md`).
 
-No later native phase is authorized. Do not create or execute `tasks/phase-3.md` until Native Phase 3 is explicitly opened.
+No later native phase is authorized. Do not create or execute `tasks/phase-4.md` until Native Phase 4 is explicitly opened.
 
-Do not begin Native Phase 3.
+Do not begin Native Phase 4.
 
 ## Completed native phases
 
 * **Native Phase 0 — Android Foundation** — accepted 2026-08-21 (`tasks/phase-0.md`)
 * **Native Phase 1 — Weather Data** — accepted 2026-08-21 (`tasks/phase-1.md`)
 * **Native Phase 2 — Weather Instrument** — accepted 2026-08-21 (`tasks/phase-2.md`)
+* **Native Phase 3 — Locations and Offline** — accepted 2026-08-21 (`tasks/phase-3.md`)
 
 Completed phase task files are historical execution evidence.
 
@@ -52,9 +54,9 @@ The product definition and factory rules live in `PROJECT.md`.
 
 Do not create or execute tasks for later phases in advance.
 
-When Native Phase 3 is explicitly authorized:
+When Native Phase 4 is explicitly authorized:
 
-* preserve `tasks/phase-2.md` as historical execution evidence
+* preserve `tasks/phase-3.md` as historical execution evidence
 * update this file to point to the newly authorized phase
 * create only that phase's detailed task file
 * do not alter completed phase history except to correct factual errors

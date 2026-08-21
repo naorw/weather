@@ -8,6 +8,7 @@ sealed class TodayUiState {
         val snapshot: TodaySnapshot,
         val acquiring: Boolean = false,
         val note: String? = null,
+        val statusLine: String = "LIVE",
     ) : TodayUiState()
     data class Failed(val error: WeatherError) : TodayUiState()
 }

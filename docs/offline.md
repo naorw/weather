@@ -11,9 +11,9 @@ The installed native application must launch without a network. Use local persis
 
 ## Recovery (no background sync)
 
-Fresh data is requested only by explicit user refresh and by a documented connectivity-return path (no timers, no WorkManager periodic sync unless a later phase contract says so).
+## Recovery (no background sync)
 
-Deduplicate in-flight work so a new location selection cannot be overwritten by an older request.
+Fresh data is requested by explicit Today Refresh, returning to Today, and a `ConnectivityManager` default-network callback (no timers, no WorkManager). In-flight work is keyed by location and a generation token so a slower request for city A cannot paint city B.
 
 There is no Background Sync API and no service-worker shell.
 

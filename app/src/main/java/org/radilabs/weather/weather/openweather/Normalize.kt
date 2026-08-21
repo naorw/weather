@@ -181,3 +181,33 @@ internal fun parseObject(body: String, label: String): JSONObject {
         throw WeatherError(WeatherError.Code.Malformed, "Weather payload was not $label JSON.", cause = error)
     }
 }
+
+internal fun parseArray(body: String, label: String): org.json.JSONArray {
+    return try {
+        org.json.JSONArray(body)
+    } catch (error: Exception) {
+        throw WeatherError(WeatherError.Code.Malformed, "Weather payload was not $label JSON.", cause = error)
+    }
+}
+
+internal fun normalizeGeoHits(array: org.json.JSONArray, source: org.radilabs.weather.places.PlaceSource): List<org.radilabs.weather.places.Place> {
+    val hits = mutableListOf<org.radilabs.weather.places.Place>()
+    for (i in 0 until array.length()) {
+        val obj = array.optJSONObject(i) ?: continue
+        val lat = obj.optFinite("lat") ?: continue
+        val lon = obj.optFinite("lon") ?: continue
+        val name = obj.optString("name")
+        if (name.isBlank()) continue
+        hits.add(
+            org.radilabs.weather.places.placeFromCoordinates(
+                latitude = lat,
+                longitude = lon,
+                displayName = name,
+                country = obj.optString("country").ifBlank { null },
+                region = obj.optString("state").ifBlank { null },
+                source = source,
+            ),
+        )
+    }
+    return hits.distinctBy { it.cacheKey }
+}

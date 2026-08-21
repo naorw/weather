@@ -1,6 +1,6 @@
 # Android project
 
-Single module `:app`. Package `org.radilabs.weather`. Version `0.2.0` / versionCode `3`.
+Single module `:app`. Package `org.radilabs.weather`. Version `0.3.0` / versionCode `4`.
 
 ```
 app/src/main/java/org/radilabs/weather/
@@ -23,6 +23,6 @@ Gradle:
 - Compose BOM `2025.08.01`
 - OkHttp 4.12.0
 
-Permission: `INTERNET` only (plus AndroidX's internal dynamic-receiver permission). No location permission.
+Permission: `INTERNET`, `ACCESS_NETWORK_STATE`, `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`. No background location. Location is requested only from Cities after an explicit action.
 
 Release builds use the debug signing config until a production keystore exists.

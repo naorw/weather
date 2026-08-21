@@ -29,7 +29,7 @@ Removing the active saved city falls back to the first remaining saved city, the
 
 Corrupt saved rows are dropped individually. A missing/corrupt active record is replaced with the first-run default.
 
-PWA IndexedDB (`org.radilabs.weather`) was the prototype store. Native persistence is chosen in Native Phase 3 (or earlier if a phase needs it). Do not reintroduce IndexedDB.
+PWA IndexedDB (`org.radilabs.weather`) was the prototype store. Native persistence is SharedPreferences `weather_places` plus per-location cache files. See `decisions/0020-native-place-and-cache-storage.md`.
 
 ## First-run fallback
 

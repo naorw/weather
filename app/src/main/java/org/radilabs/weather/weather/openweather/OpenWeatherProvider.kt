@@ -5,6 +5,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
+import org.radilabs.weather.places.Place
+import org.radilabs.weather.places.PlaceSource
+import org.radilabs.weather.places.placeFromCoordinates
 import org.radilabs.weather.weather.Coordinates
 import org.radilabs.weather.weather.WeatherError
 import org.radilabs.weather.weather.WeatherProvider
@@ -24,12 +27,9 @@ class OpenWeatherProvider(
 ) : WeatherProvider {
 
     override fun getSnapshot(coordinates: Coordinates): WeatherSnapshot {
-        val key = getApiKey()?.trim().orEmpty()
-        if (key.isEmpty()) {
-            throw WeatherError(WeatherError.Code.MissingKey, "OpenWeather API key is not configured.")
-        }
-        val currentBody = getJson(OpenWeatherPaths.CURRENT, coordinates, key)
-        val forecastBody = getJson(OpenWeatherPaths.FORECAST, coordinates, key)
+        val key = requireKey()
+        val currentBody = getJson(OpenWeatherPaths.CURRENT, weatherParams(coordinates), key)
+        val forecastBody = getJson(OpenWeatherPaths.FORECAST, weatherParams(coordinates), key)
         val currentJson = parseObject(currentBody, "current")
         val forecastJson = parseObject(forecastBody, "forecast")
         rejectEmbeddedError(currentJson)
@@ -39,7 +39,7 @@ class OpenWeatherProvider(
         val points = normalizeForecastPoints(forecastJson)
         val days = aggregateDaily(points, location.timezoneOffsetSeconds)
         val air = try {
-            val airJson = parseObject(getJson(OpenWeatherPaths.AIR, coordinates, key), "air")
+            val airJson = parseObject(getJson(OpenWeatherPaths.AIR, weatherParams(coordinates), key), "air")
             rejectEmbeddedError(airJson)
             normalizeAirQuality(airJson)
         } catch (error: WeatherError) {
@@ -56,15 +56,59 @@ class OpenWeatherProvider(
         )
     }
 
-    private fun getJson(path: String, coordinates: Coordinates, apiKey: String): String {
-        val url = origin.newBuilder()
-            .encodedPath(path)
-            .addQueryParameter("lat", coordinates.latitude.toString())
-            .addQueryParameter("lon", coordinates.longitude.toString())
-            .addQueryParameter("units", "metric")
-            .addQueryParameter("appid", apiKey)
-            .build()
-        val request = Request.Builder().url(url).get().build()
+    override fun searchPlaces(query: String): List<Place> {
+        val key = requireKey()
+        val q = query.trim()
+        if (q.isEmpty()) return emptyList()
+        val body = getJson(
+            OpenWeatherPaths.GEO_DIRECT,
+            mapOf("q" to q, "limit" to "5"),
+            key,
+        )
+        return normalizeGeoHits(parseArray(body, "geocoding"), PlaceSource.Search)
+    }
+
+    override fun reverseGeocode(coordinates: Coordinates): Place {
+        val key = requireKey()
+        val body = getJson(
+            OpenWeatherPaths.GEO_REVERSE,
+            mapOf(
+                "lat" to coordinates.latitude.toString(),
+                "lon" to coordinates.longitude.toString(),
+                "limit" to "1",
+            ),
+            key,
+        )
+        val hits = normalizeGeoHits(parseArray(body, "reverse geocoding"), PlaceSource.Device)
+        return hits.firstOrNull() ?: placeFromCoordinates(
+            latitude = coordinates.latitude,
+            longitude = coordinates.longitude,
+            displayName = "Device location",
+            source = PlaceSource.Device,
+        )
+    }
+
+    private fun requireKey(): String {
+        val key = getApiKey()?.trim().orEmpty()
+        if (key.isEmpty()) {
+            throw WeatherError(WeatherError.Code.MissingKey, "OpenWeather API key is not configured.")
+        }
+        return key
+    }
+
+    private fun weatherParams(coordinates: Coordinates): Map<String, String> {
+        return mapOf(
+            "lat" to coordinates.latitude.toString(),
+            "lon" to coordinates.longitude.toString(),
+            "units" to "metric",
+        )
+    }
+
+    private fun getJson(path: String, query: Map<String, String>, apiKey: String): String {
+        val builder = origin.newBuilder().encodedPath(path)
+        query.forEach { (name, value) -> builder.addQueryParameter(name, value) }
+        builder.addQueryParameter("appid", apiKey)
+        val request = Request.Builder().url(builder.build()).get().build()
         val response = try {
             http.newCall(request).execute()
         } catch (error: IOException) {

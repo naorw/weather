@@ -2,7 +2,7 @@
 
 Latest successful **normalized** weather snapshots are stored per location. Raw OpenWeather HTTP bodies are not cached.
 
-PWA IndexedDB stores are historical. Native Android must use an on-device store chosen in the authorized phase. The *record shape* below remains the product contract until a native-phase decision replaces it.
+PWA IndexedDB stores are historical. Native Android stores one Gson JSON file per `cacheKey` under `filesDir/weather-cache/` (`decisions/0020-native-place-and-cache-storage.md`). The record shape below remains the product contract.
 
 ## Snapshot record
 

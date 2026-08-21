@@ -9,7 +9,7 @@ Device location is optional and user-initiated from Cities.
 3. One-shot current location. Do not use continuous background tracking.
 4. `watchPosition`-style tracking is not used. There is no location history store.
 
-Returned coordinates are used for weather immediately. Reverse geocoding is best-effort for a display name. If it fails, the label is `Device location`.
+Returned coordinates are used for weather immediately after rounding to the location identity (`lat/lon` to 4 decimals). Reverse geocoding is best-effort for a display name. If it fails, the label is `Device location`.
 
 ## States
 
