@@ -1,9 +1,6 @@
-export type GlyphId =
-  | "clear"
-  | "partly-cloudy"
-  | "overcast"
-  | "rain"
-  | "drizzle";
+import type { ConditionCategory } from "./weather/models";
+
+export type GlyphId = ConditionCategory;
 
 const stroke = "currentColor";
 
@@ -26,6 +23,13 @@ const glyphs: Record<GlyphId, { label: string; markup: string }> = {
       "Partly cloudy",
     ),
   },
+  cloudy: {
+    label: "Cloudy",
+    markup: svg(
+      `<path d="M6 16h11a3 3 0 0 0 0-6h-.4A5 5 0 0 0 6 13"/><path d="M8 19h8"/>`,
+      "Cloudy",
+    ),
+  },
   overcast: {
     label: "Overcast",
     markup: svg(
@@ -40,6 +44,13 @@ const glyphs: Record<GlyphId, { label: string; markup: string }> = {
       "Drizzle",
     ),
   },
+  "light-rain": {
+    label: "Light rain",
+    markup: svg(
+      `<path d="M6 13h11a3 3 0 0 0 0-6h-.5A5 5 0 0 0 6 10"/><path d="M9 16v3M13 16v3"/>`,
+      "Light rain",
+    ),
+  },
   rain: {
     label: "Rain",
     markup: svg(
@@ -47,12 +58,55 @@ const glyphs: Record<GlyphId, { label: string; markup: string }> = {
       "Rain",
     ),
   },
+  "heavy-rain": {
+    label: "Heavy rain",
+    markup: svg(
+      `<path d="M6 12h11a3 3 0 0 0 0-6h-.5A5 5 0 0 0 6 9"/><path d="M7 15l-1.5 5M11 14l-1.5 6M15 15l-1.5 5M19 16l-1 4"/>`,
+      "Heavy rain",
+    ),
+  },
+  thunderstorm: {
+    label: "Thunderstorm",
+    markup: svg(
+      `<path d="M6 12h10a3 3 0 0 0 0-6h-.5A5 5 0 0 0 6 9"/><path d="M11 12l-2 5h3l-2 5"/>`,
+      "Thunderstorm",
+    ),
+  },
+  "light-snow": {
+    label: "Light snow",
+    markup: svg(
+      `<path d="M6 13h11a3 3 0 0 0 0-6h-.5A5 5 0 0 0 6 10"/><path d="M9 17h0M12 19h0M15 17h0"/>`,
+      "Light snow",
+    ),
+  },
+  snow: {
+    label: "Snow",
+    markup: svg(
+      `<path d="M12 7v10M8 9l8 6M16 9l-8 6"/><circle cx="12" cy="12" r="1"/>`,
+      "Snow",
+    ),
+  },
+  fog: {
+    label: "Fog",
+    markup: svg(
+      `<path d="M4 10h16M5 13h14M6 16h12"/>`,
+      "Fog",
+    ),
+  },
+  unknown: {
+    label: "Unknown",
+    markup: svg(`<circle cx="12" cy="12" r="7"/><path d="M12 8v5M12 16v1"/>`, "Unknown"),
+  },
 };
 
+export function glyphFor(condition: ConditionCategory): GlyphId {
+  return condition in glyphs ? condition : "unknown";
+}
+
 export function glyphMarkup(id: GlyphId): string {
-  return glyphs[id].markup;
+  return glyphs[glyphFor(id)].markup;
 }
 
 export function glyphLabel(id: GlyphId): string {
-  return glyphs[id].label;
+  return glyphs[glyphFor(id)].label;
 }

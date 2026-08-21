@@ -1,6 +1,6 @@
 import { bindSettings, renderSettings } from "./screens/settings";
 import { renderPlaceholder } from "./screens/placeholder";
-import { renderToday } from "./screens/today";
+import { bindToday, renderToday } from "./screens/today";
 import { parseRoute, routeHash, ROUTES, type Route } from "./routes";
 
 const LABELS: Record<Route, string> = {
@@ -13,7 +13,7 @@ const LABELS: Record<Route, string> = {
 function screen(route: Route): string {
   switch (route) {
     case "today":
-      return renderToday();
+      return renderToday({ status: "idle", refreshing: false });
     case "radar":
       return renderPlaceholder(
         "Radar",
@@ -55,9 +55,14 @@ export function mount(root: HTMLElement): void {
   const main = root.querySelector("#main");
   if (!(main instanceof HTMLElement)) return;
 
+  let unbind: (() => void) | undefined;
+
   const paint = (): void => {
+    unbind?.();
+    unbind = undefined;
     const route = parseRoute(window.location.hash);
     main.innerHTML = screen(route);
+    if (route === "today") unbind = bindToday(main);
     if (route === "settings") bindSettings(main);
     for (const link of root.querySelectorAll<HTMLAnchorElement>("[data-route]")) {
       const active = link.dataset.route === route;
