@@ -59,19 +59,33 @@ Stroke glyphs, current color, square caps. Categories: clear, partly-cloudy, clo
 
 ## Hierarchy
 
-**Now (hero) → Next hours → Next days → atmospheric detail**
+**Now (hero) → 3-hour steps → Next days → atmospheric detail**
 
-The temperature is the dominant element. The near-term strip is horizontal. Days are compact rows with a shared-scale range bar. Wind uses a compact compass mark plus readout. Remaining atmosphere is a labeled list, not a grid of equal cards.
+The temperature is the dominant element. The near-term strip is horizontal **3-hour steps** (never implied hourly). Days are compact rows with weekday, date number, muted `part.` when incomplete, precip chance, and a shared-scale range bar. Wind uses a compact compass (needle = meteorological from-direction) plus readout. Remaining atmosphere is a labeled list. Air quality is OpenWeather’s own 1–5 index with a five-tick scale; never EPA/CAQI. UV is omitted when the provider does not supply it.
 
 Hero high/low prefer today’s daily summary when that local date exists; otherwise the current-condition station envelope; otherwise an em dash (missing), never a fake zero.
 
+Omitted precipitation probability renders as an em dash, not `0%`. A measured 0 is `0%`.
+
+## Compose primitives
+
+Reusable instrument pieces live in `org.radilabs.weather.ui.instrument`:
+
+* `SectionLabel` / `TechnicalLabel`
+* `Hairline`
+* `RangeBar` / `rangeBarFractions`
+* `WindCompass`
+* `AqScale`
+
+Glyphs remain in `ui.today.WeatherGlyph`. Do not grow this into a widget kit.
+
 ## Partial days
 
-Muted `part.` on incomplete first/last forecast days. See `decisions/0011-partial-day-marker.md`.
+Muted `part.` on incomplete first/last forecast days. TalkBack: “incomplete forecast coverage”. See `decisions/0011-partial-day-marker.md`.
 
 ## Loading / empty / error
 
-Same graphite instrument frame. Loading says “Acquiring weather” with no numeric placeholders. Empty is “No usable weather payload.” Provider errors use stable error codes with human titles (Credentials, Offline, Rate limited, …) and never include keys or raw payloads. A failed refresh keeps the last valid snapshot and shows a short amber note.
+Same graphite instrument frame. First load says “Acquiring weather” with no numeric placeholders. Provider errors use stable titles (Credentials, Offline, Rate limited, …) and never include keys or raw payloads. A failed **refresh** keeps the last in-memory snapshot and shows a short amber note. That snapshot is not persisted (Phase 3 owns cache/offline).
 
 ## Constraints
 

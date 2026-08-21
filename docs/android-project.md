@@ -1,6 +1,6 @@
 # Android project
 
-Single module `:app`. Package `org.radilabs.weather`. Version `0.1.0` / versionCode `2`.
+Single module `:app`. Package `org.radilabs.weather`. Version `0.2.0` / versionCode `3`.
 
 ```
 app/src/main/java/org/radilabs/weather/
@@ -9,7 +9,8 @@ app/src/main/java/org/radilabs/weather/
   weather/                   # application-owned models, errors, aggregation
   weather/openweather/       # HTTP + JSON mapping
   ui/WeatherRoot.kt
-  ui/today/                  # Today presentation + live Stockholm wiring
+  ui/instrument/             # section label, hairline, range bar, compass, AQ scale
+  ui/today/                  # Today instrument
   ui/settings/
 ```
 

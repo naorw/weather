@@ -4,6 +4,10 @@ import org.radilabs.weather.weather.WeatherError
 
 sealed class TodayUiState {
     data object Loading : TodayUiState()
-    data class Ready(val snapshot: TodaySnapshot) : TodayUiState()
+    data class Ready(
+        val snapshot: TodaySnapshot,
+        val acquiring: Boolean = false,
+        val note: String? = null,
+    ) : TodayUiState()
     data class Failed(val error: WeatherError) : TodayUiState()
 }

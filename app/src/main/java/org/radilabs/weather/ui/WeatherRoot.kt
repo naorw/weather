@@ -35,6 +35,7 @@ import org.radilabs.weather.ui.placeholder.PlaceholderScreen
 import org.radilabs.weather.ui.settings.SettingsScreen
 import org.radilabs.weather.ui.theme.Wx
 import org.radilabs.weather.ui.today.TodayScreen
+import org.radilabs.weather.ui.today.TodaySnapshot
 import org.radilabs.weather.ui.today.TodayUiState
 import org.radilabs.weather.ui.today.presentSnapshot
 import org.radilabs.weather.weather.STOCKHOLM
@@ -45,19 +46,37 @@ import org.radilabs.weather.weather.WeatherProvider
 fun WeatherRoot(apiKeyStore: ApiKeyStore, provider: WeatherProvider) {
     var dest by remember { mutableStateOf(Dest.Today) }
     var today by remember { mutableStateOf<TodayUiState>(TodayUiState.Loading) }
+    var lastReady by remember { mutableStateOf<TodaySnapshot?>(null) }
     val scope = rememberCoroutineScope()
     fun load() {
-        today = TodayUiState.Loading
+        val previous = lastReady
+        today = if (previous == null) {
+            TodayUiState.Loading
+        } else {
+            TodayUiState.Ready(previous, acquiring = true)
+        }
         scope.launch {
-            today = withContext(Dispatchers.IO) {
+            val outcome = withContext(Dispatchers.IO) {
                 try {
-                    TodayUiState.Ready(presentSnapshot(provider.getSnapshot(STOCKHOLM)))
+                    Result.success(presentSnapshot(provider.getSnapshot(STOCKHOLM)))
                 } catch (error: WeatherError) {
-                    TodayUiState.Failed(error)
+                    Result.failure(error)
                 } catch (error: Exception) {
-                    TodayUiState.Failed(
+                    Result.failure(
                         WeatherError(WeatherError.Code.Unknown, "Weather request failed.", cause = error),
                     )
+                }
+            }
+            val snap = outcome.getOrNull()
+            today = if (snap != null) {
+                lastReady = snap
+                TodayUiState.Ready(snap)
+            } else {
+                val error = outcome.exceptionOrNull() as WeatherError
+                if (previous != null) {
+                    TodayUiState.Ready(previous, note = "${error.title.uppercase()} · refresh failed")
+                } else {
+                    TodayUiState.Failed(error)
                 }
             }
         }

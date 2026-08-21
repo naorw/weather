@@ -8,12 +8,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.radilabs.weather.ui.theme.Wx
 
 @Composable
 fun WeatherGlyph(id: GlyphId, modifier: Modifier = Modifier, color: Color = Wx.text) {
-    Canvas(modifier.size(24.dp)) {
+    Canvas(
+        modifier
+            .size(24.dp)
+            .semantics { contentDescription = "Condition ${id.name}" },
+    ) {
         val s = Stroke(width = size.minDimension * 0.08f, cap = StrokeCap.Square)
         val cx = size.width / 2f
         val cy = size.height / 2f

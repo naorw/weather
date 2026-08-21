@@ -1,10 +1,10 @@
 # Task Execution
 
-Current phase: **none authorized after Native Phase 1**
+Current phase: **none authorized after Native Phase 2**
 
-Native Phase 1 — Weather Data is **accepted** (2026-08-21). Evidence: `tasks/phase-1.md`.
+Native Phase 2 — Weather Instrument is **accepted** (2026-08-21). Evidence: `tasks/phase-2.md`.
 
-Do not create `tasks/phase-2.md`. Do not begin Native Phase 2.
+Do not create `tasks/phase-3.md`. Do not begin Native Phase 3.
 
 Historical `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md` are PWA prototype evidence only. Do not execute them.
 
@@ -25,12 +25,13 @@ Historical `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md` are PWA prototype e
 
 ## Current Execution
 
-No native phase is authorized after Native Phase 1 acceptance.
+No native phase is authorized after Native Phase 2 acceptance.
 
 Historical native task files:
 
 * `tasks/phase-0.md`
 * `tasks/phase-1.md`
+* `tasks/phase-2.md`
 
 Historical PWA task files (do not execute):
 
@@ -68,17 +69,17 @@ If forgetting information could cause a future agent to make a wrong implementat
 
 Otherwise, don't.
 
-## Phase 1 Boundaries (historical)
+## Phase 2 Boundaries (historical)
 
-Phase 1 owned OpenWeather free current / 3-hour forecast / air pollution, normalized models, aggregation, stable errors, the Phase 0 runtime key, and minimal Stockholm Today wiring.
+Phase 2 owned Today hierarchy, design-system application, loading/error presentation, explicit refresh, and in-memory last-good snapshot on failed refresh.
 
-It did not own geolocation, cities, cache, radar, Phase 2 UI, paid APIs, or provider plugins.
+It did not own geolocation, cities, weather cache, radar, notifications, or Phase 3 locations.
 
 ## After Phase Authorization
 
-Once the owner/planner explicitly authorizes Native Phase 2:
+Once the owner/planner explicitly authorizes Native Phase 3:
 
-* create only `tasks/phase-2.md`
+* create only `tasks/phase-3.md`
 * update `TASKS.md` to name that phase
 * update the current phase listed in this file
 
