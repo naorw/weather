@@ -4,56 +4,46 @@ Detailed implementation tasks live under `tasks/`.
 
 Only the currently authorized phase has a detailed task file that should be executed.
 
-Current structure:
+## Current execution
 
-```text
-tasks/
-├── README.md
-├── phase-0.md          # Native Phase 0 — accepted
-├── phase-1.md          # Native Phase 1 — accepted
-├── phase-2.md          # Native Phase 2 — accepted
-├── phase-3.md          # Native Phase 3 — accepted
-├── phase-4.md          # Native Phase 4 — accepted
-├── phase-5.md          # Native Phase 5 — accepted
-└── pwa/
-    ├── phase-0.md
-    ├── phase-1.md
-    ├── phase-2.md
-    └── phase-3.md
-```
+**Stage 1 — Daily-Use Refinement** is authorized.
 
-Last completed native phase:
+Current authorized phase:
 
-**Native Phase 5 — Daily-Use Polish** — accepted 2026-08-21 (`tasks/phase-5.md`). First public release: **Weather v0.1.0**.
+**Stage 1 / Phase 0 — Current Context and Map Semantics**
 
-No later native phase is authorized. Do not create or execute `tasks/phase-6.md`. Do not begin Phase 6.
+Release target: **Weather v0.1.1**.
 
-Remaining non-blocking polish and extra testing is deferred to **v0.1.1** or a future explicitly authorized phase.
+This phase addresses field-discovered daily-use behavior after the v0.1.0 release:
 
-## Completed native phases
+- prefer current device location on cold start when location permission is already granted;
+- do not request location permission automatically on startup;
+- fall back safely to the previous active/cached place if current location cannot be resolved;
+- let an explicit manual city choice win for the rest of the running session;
+- rename the user-facing Radar surface to Map / WX MAP without claiming observed radar.
 
-* **Native Phase 0 — Android Foundation** — accepted 2026-08-21 (`tasks/phase-0.md`)
-* **Native Phase 1 — Weather Data** — accepted 2026-08-21 (`tasks/phase-1.md`)
-* **Native Phase 2 — Weather Instrument** — accepted 2026-08-21 (`tasks/phase-2.md`)
-* **Native Phase 3 — Locations and Offline** — accepted 2026-08-21 (`tasks/phase-3.md`)
-* **Native Phase 4 — Radar and Maps** — accepted 2026-08-21 (`tasks/phase-4.md`)
-* **Native Phase 5 — Daily-Use Polish** — accepted 2026-08-21 (`tasks/phase-5.md`)
+Detailed task file: `tasks/stage-1-phase-0.md`.
 
-Completed phase task files are historical execution evidence.
+Do not create or execute Stage 1 Phase 1 work. Do not reopen Stage 0.
+
+## Stage 0 — Native v0.1 — completed
+
+Stage 0 produced and released **Weather v0.1.0**.
+
+Completed native phases:
+
+* Native Phase 0 — Android Foundation
+* Native Phase 1 — Weather Data
+* Native Phase 2 — Weather Instrument
+* Native Phase 3 — Locations and Offline
+* Native Phase 4 — Radar and Maps
+* Native Phase 5 — Daily-Use Polish
+
+Historical task files remain execution evidence under `tasks/phase-0.md` through `tasks/phase-5.md`.
 
 ## Historical PWA prototype
 
-These files are execution evidence from the abandoned PWA platform. They are not native Android phases.
+Files under `tasks/pwa/` are historical prototype evidence only and must not be executed.
 
-* **PWA Phase 0 — PWA Foundation** — accepted 2026-08-21 (`tasks/pwa/phase-0.md`)
-* **PWA Phase 1 — Weather Data** — accepted 2026-08-21 (`tasks/pwa/phase-1.md`)
-* **PWA Phase 2 — Weather Instrument** — accepted 2026-08-21 (`tasks/pwa/phase-2.md`)
-* **PWA Phase 3 — Locations and Offline** — stopped / superseded by native Android (`tasks/pwa/phase-3.md`)
-
-Do not reopen PWA work. Do not execute these files.
-
-The native phase roadmap lives in `PHASES.md`.
-
+The roadmap and immutable phase contracts live in `PHASES.md`.
 The product definition and factory rules live in `PROJECT.md`.
-
-Do not create or execute tasks for later phases in advance.
