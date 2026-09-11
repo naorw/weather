@@ -1,48 +1,37 @@
 # Task Execution
 
-Current phase: **none authorized after Native Phase 5**
+Current stage: **Stage 1 — Daily-Use Refinement**
 
-Native Phase 5 — Daily-Use Polish is **accepted** (2026-08-21). Evidence: `tasks/phase-5.md`. First public release: **Weather v0.1.0**.
+Current phase: **Stage 1 / Phase 0 — Current Context and Map Semantics**
 
-Do not create `tasks/phase-6.md`. Do not begin Phase 6.
+Status: **authorized / not started**
 
-Remaining non-blocking polish and extra testing is deferred to **v0.1.1** or a future explicitly authorized phase.
+Release target: **Weather v0.1.1**
 
-Historical `tasks/pwa/phase-0.md` … `tasks/pwa/phase-3.md` are PWA prototype evidence only. Do not execute them.
+Read and execute only `tasks/stage-1-phase-0.md` for the current work.
+
+Stage 0 is complete and produced Weather v0.1.0. Historical native task files `tasks/phase-0.md` through `tasks/phase-5.md` are accepted execution evidence and must not be reopened.
+
+Historical `tasks/pwa/phase-0.md` through `tasks/pwa/phase-3.md` are PWA prototype evidence only. Do not execute them.
+
+Execution rules:
 
 1. Read `PROJECT.md`.
 2. Read `PHASES.md`.
 3. Read `TASKS.md`.
-4. Read only the currently authorized phase task file, if any.
-5. If none is authorized, STOP.
-6. Do not work outside the current phase.
-7. Discoveries outside scope go to **Deferred Work** in the current phase task file.
-8. A completed task does not imply a completed phase.
-9. Phase completion requires satisfying the current phase acceptance criteria and handoff contract in `PHASES.md`.
-10. Record decisions under `decisions/` only when future work must respect them.
-11. Record durable technical knowledge under `docs/` only when future work needs it.
-12. Keep the current phase task file updated with implementation evidence, tests, files changed, known limitations, deferred work, and decisions.
-13. Stop at phase handoff.
-14. Never create or begin the next phase task file automatically.
+4. Read only the currently authorized phase task file.
+5. Do not work outside the current phase.
+6. Discoveries outside scope go to Deferred Work in the current phase task file.
+7. A completed task does not imply a completed phase.
+8. Phase completion requires satisfying the current phase acceptance criteria and handoff contract in `PHASES.md`.
+9. Record durable decisions under `decisions/` only when future work must respect them.
+10. Record durable technical knowledge under `docs/` only when future work needs it.
+11. Keep the active task file updated with implementation evidence, tests, changed files, limitations, deferred work, and decisions.
+12. Stop at phase handoff.
+13. Never create or begin the next phase automatically.
 
-## Current Execution
+## Current execution file
 
-No native phase is authorized after Native Phase 5 acceptance.
+* `tasks/stage-1-phase-0.md`
 
-Historical native task files:
-
-* `tasks/phase-0.md`
-* `tasks/phase-1.md`
-* `tasks/phase-2.md`
-* `tasks/phase-3.md`
-* `tasks/phase-4.md`
-* `tasks/phase-5.md`
-
-Historical PWA task files (do not execute):
-
-* `tasks/pwa/phase-0.md`
-* `tasks/pwa/phase-1.md`
-* `tasks/pwa/phase-2.md`
-* `tasks/pwa/phase-3.md`
-
-Do not reopen PWA work.
+Do not create Stage 1 Phase 1 tasks until explicitly authorized.
