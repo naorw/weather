@@ -16,7 +16,22 @@ The PWA prototype roadmap and its accepted/stopped work live in Git history and 
 
 ---
 
-# Phase Map
+# Stage Map
+
+| Stage | Name | Outcome | State |
+| --- | --- | --- | --- |
+| 0 | Native v0.1 | A dependable native Android weather app released as v0.1.0 | Complete |
+| 1 | Daily-Use Refinement | Field-driven improvements to make the app safer and clearer in everyday use | Active |
+
+A stage contains one or more phases. A stage is complete only after its phases and stage exit conditions are accepted.
+
+---
+
+# Stage 0 — Native v0.1
+
+Stage 0 is complete. Native Phases 0–5 were accepted and Weather v0.1.0 was released.
+
+## Stage 0 Phase Map
 
 | Phase | Name                  | Outcome                                                                                         |
 | ----- | --------------------- | ----------------------------------------------------------------------------------------------- |
@@ -26,8 +41,6 @@ The PWA prototype roadmap and its accepted/stopped work live in Git history and 
 | 3     | Locations and Offline | Saved cities, geolocation, caching, stale-state handling, and recovery work reliably            |
 | 4     | Radar and Maps        | Useful technical map/radar view exists within the free-first constraint                         |
 | 5     | Daily-Use Polish      | GrapheneOS/Pixel install, performance, accessibility, reliability, and production polish        |
-
-Future capabilities require additional phase contracts.
 
 ---
 
@@ -739,4 +752,145 @@ Before Phase 5 can be declared complete:
 
 Then STOP.
 
-Future work requires a new phase contract.
+Stage 0 is complete after acceptance of Phase 5 and publication of Weather v0.1.0.
+
+---
+
+# Stage 1 — Daily-Use Refinement
+
+## Stage Goal
+
+Use real daily use of v0.1.x to remove misleading defaults and small interaction problems without expanding Weather into a different product.
+
+Stage 1 is field-driven refinement, not a rewrite.
+
+## Stage Exit Conditions
+
+* Accepted field-discovered daily-use issues are resolved or deliberately deferred.
+* Existing offline, privacy, and no-background-work guarantees remain intact.
+* Release signing continuity from v0.1.0 is preserved.
+* A stable v0.1.x release checkpoint is produced when warranted.
+* Roboticist + Planner explicitly accept the stage before any later stage begins.
+
+## Stage 1 Phase Map
+
+| Phase | Name | Outcome |
+| --- | --- | --- |
+| 0 | Current Context and Map Semantics | Cold-start weather context follows the current device location when already permitted, and the map surface is named truthfully |
+
+Future Stage 1 phases require explicit authorization and new immutable contracts.
+
+---
+
+# Stage 1 / Phase 0 — Current Context and Map Semantics
+
+## Goal
+
+Make the first screen answer the user's immediate weather question safely: when location permission is already granted, cold launch should prefer the device's current location instead of silently presenting an old previously active city.
+
+At the same time, rename the existing map surface so model-derived precipitation/cloud data is not presented as observed radar.
+
+## Entry Conditions
+
+* Stage 0 is accepted and Weather v0.1.0 is released.
+* Device-location and reverse-geocoding paths already work from explicit user action.
+* Offline cache and saved-city behavior are stable.
+* Owner/planner has explicitly authorized this phase and created `tasks/stage-1-phase-0.md`.
+
+## Scope
+
+### Startup current context
+
+On cold app start, when location permission is already granted:
+
+* resolve the current device location using the existing one-shot location path;
+* reverse-geocode it through the existing provider boundary;
+* activate the resulting device place for the running session;
+* refresh Today for that location.
+
+This intentionally supersedes Stage 0 Phase 3's old startup rule only for already-granted permission. Historical Stage 0 behavior remains recorded unchanged.
+
+### Permission behavior
+
+* Do not request location permission automatically on startup.
+* If permission is not already granted, keep the existing active/saved-place startup behavior.
+* Permission denial must remain fully usable through search and saved cities.
+* No background location access.
+
+### Failure and fallback
+
+If current-location resolution or reverse geocoding fails:
+
+* fall back to the previously active/cached place;
+* preserve useful cached weather;
+* do not erase saved state;
+* do not imply that fallback data represents the current device location.
+
+### Session precedence
+
+Automatic device-location selection is startup-only.
+
+After the user explicitly activates another city during the running app session, that manual selection wins until the app is restarted. Tab navigation or returning to Today must not snap the app back to device location.
+
+Transient device locations must not be silently added to Saved Cities.
+
+### Map semantics
+
+Rename only user-facing map terminology:
+
+* bottom navigation: `Radar` → `Map`;
+* map screen heading: `RADAR` → `WX MAP`;
+* retain truthful layer labels such as `PRECIP MAP` and `CLOUD COVER`;
+* do not call the existing model-derived weather overlays observed radar.
+
+Internal class/file renaming is optional and must not drive unrelated refactoring.
+
+### Release checkpoint
+
+Prepare the patch release as Weather v0.1.1 with an incremented version code and the same production signing identity established for v0.1.0.
+
+## Explicit Exclusions
+
+* Background location tracking.
+* Automatic startup permission requests.
+* Periodic/background refresh or WorkManager.
+* New map layers.
+* Observed or historical radar.
+* Paid weather data.
+* New weather providers.
+* Notifications.
+* Widgets or watch integration.
+* Accounts or cloud sync.
+* Broad architecture cleanup unrelated to the phase.
+
+## Acceptance Criteria
+
+1. With location permission already granted, a cold launch resolves device location and Today shows weather for that current place.
+2. Startup no longer silently presents a stale previous city as the apparent current context when location can be resolved.
+3. Location/reverse-geocode failure falls back cleanly to previous active/cached weather.
+4. With permission absent, startup does not prompt for location and the app remains usable.
+5. Startup device location does not create duplicate or unwanted saved-city entries.
+6. A manual city selection wins for the rest of the running session, including after navigating between tabs.
+7. Offline/cache behavior and failed-refresh preservation do not regress.
+8. Bottom navigation says `MAP` and the map heading says `WX MAP`.
+9. Existing precipitation/cloud overlays remain truthful and functional.
+10. v0.1.1 uses the same production signing identity as v0.1.0.
+11. Existing tests pass and focused tests cover the new startup/session-selection behavior where practical.
+
+## Handoff Contract
+
+Before Stage 1 Phase 0 can be declared complete:
+
+* cold-start current-location behavior must be tested on a real Pixel / GrapheneOS device;
+* already-granted, no-permission, and failed-location paths must be demonstrated;
+* manual-city session precedence must be demonstrated;
+* offline/cache behavior must be retested;
+* Map / WX MAP naming must be visually reviewed;
+* an independent reviewer or Watcher must verify the lifecycle/location change;
+* tests and build results must be recorded;
+* production-signing continuity must be verified for the v0.1.1 candidate;
+* known limitations and deferred work must be recorded.
+
+Then STOP.
+
+Do not begin Stage 1 Phase 1 automatically.
