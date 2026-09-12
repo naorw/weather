@@ -107,18 +107,18 @@ adb uninstall org.radilabs.weather
 
 Install the APK with `adb` (or copy the file to the device). Confirm:
 
-1. App appears in the launcher as Weather
+1. App appears in the launcher as WX Weather
 2. Launch does not require a browser
 3. Today shows the graphite instrument
-4. Bottom nav: Today / Radar / Cities / Settings
+4. Bottom nav: Today / Map / Cities / Settings
 5. Settings can save a key; relaunch still shows configured; Remove clears it
-6. Radar: dark map, active place, PRECIP MAP overlay with a key; no Play Services
-7. Settings version shows `0.1.0`
+6. Map: header `WX MAP`, dark map, active place, PRECIP MAP overlay with a key; no Play Services
+7. Settings version shows `0.1.1`
 
 ## Troubleshooting
 
 - Missing key: Settings → save OpenWeather key. Nothing is bundled in the APK.
 - Overlay tiles fail, map still works: key missing/invalid or network.
-- Radar blank after tab switch: MapView lifecycle is `onCreate` then observer; reopen Radar.
+- Map blank after tab switch: MapView lifecycle is `onCreate` then observer; reopen Map.
 - Production install fails with signature mismatch: uninstall the debug-signed app first.
 

@@ -1,6 +1,6 @@
 # Android project
 
-Single module `:app`. Package `org.radilabs.weather`. Version `0.1.0` / versionCode `6`.
+Single module `:app`. Package `org.radilabs.weather`. Version `0.1.1` / versionCode `7`.
 
 ```
 app/src/main/java/org/radilabs/weather/

@@ -4,7 +4,7 @@ Current stage: **Stage 1 — Daily-Use Refinement**
 
 Current phase: **Stage 1 / Phase 0 — Current Context and Map Semantics**
 
-Status: **authorized / not started**
+Status: **implemented / awaiting owner acceptance**
 
 Release target: **Weather v0.1.1**
 

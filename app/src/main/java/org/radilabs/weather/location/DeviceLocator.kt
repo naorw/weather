@@ -1,6 +1,7 @@
 package org.radilabs.weather.location
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -27,6 +28,7 @@ class DeviceLocator(private val context: Context) {
         return fine == PackageManager.PERMISSION_GRANTED || coarse == PackageManager.PERMISSION_GRANTED
     }
 
+    @SuppressLint("MissingPermission")
     suspend fun currentCoordinates(): Coordinates {
         if (!hasPermission()) {
             throw LocationUnavailableException("Location permission denied.")
@@ -52,6 +54,7 @@ class DeviceLocator(private val context: Context) {
         return Coordinates(location.latitude, location.longitude)
     }
 
+    @SuppressLint("MissingPermission")
     private suspend fun oneShot(manager: LocationManager, provider: String): Location {
         return suspendCancellableCoroutine { cont ->
             val finished = AtomicBoolean(false)

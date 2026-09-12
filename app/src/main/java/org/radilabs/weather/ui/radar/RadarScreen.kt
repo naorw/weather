@@ -158,7 +158,7 @@ fun RadarScreen(place: Place, apiKey: String?) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(Modifier.weight(1f)) {
-                Text("RADAR", color = Wx.text, fontSize = Wx.heading, letterSpacing = 2.sp)
+                Text("WX MAP", color = Wx.text, fontSize = Wx.heading, letterSpacing = 2.sp)
                 Text(
                     place.displayName.uppercase(),
                     color = Wx.accent,

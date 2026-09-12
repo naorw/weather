@@ -33,7 +33,13 @@ PWA IndexedDB (`org.radilabs.weather`) was the prototype store. Native persisten
 
 ## First-run fallback
 
-If nothing is stored, the active place is Stockholm SE (`59.3293, 18.0686`, source `default`). The app does not request location permission on startup. The user can search or optionally use device location from Cities.
+If nothing is stored, the active place is Stockholm SE (`59.3293, 18.0686`, source `default`).
+
+The app does **not** request location permission on startup.
+
+If permission is **already granted** (from an earlier Cities action), cold start resolves a one-shot device location, reverse-geocodes it, and activates that device place for the session **without** adding it to Saved Cities. Failure keeps the previous active/cached place and must not label that fallback as current device location. See `decisions/0023-startup-device-location.md`.
+
+The user can still search or tap Use device location from Cities. A city chosen during the running session stays active until process restart.
 
 ## Search
 

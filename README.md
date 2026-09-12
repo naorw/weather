@@ -23,11 +23,11 @@ v1 is free-first, privacy-conscious, and does not include accounts, analytics, A
 
 Dark graphite instrumentation: charcoal surfaces, muted off-white text, restrained cyan/teal and amber accents. The interface should feel like a weather instrument, not a lifestyle dashboard.
 
-Primary screens: **Today**, **Radar**, **Cities**, **Settings**.
+Primary screens: **Today**, **Map**, **Cities**, **Settings**.
 
 ## Status
 
-Native **Phase 5 — Daily-Use Polish** is **accepted** (2026-08-21). First public release: **Weather v0.1.0**. No later phase is authorized.
+Native **Phase 5 — Daily-Use Polish** is **accepted** (2026-08-21). First public release: **Weather v0.1.0**. **Stage 1 / Phase 0** (v0.1.1 candidate) is authorized.
 
 See `PROJECT.md`, `PHASES.md`, `docs/handoffs/phase-5.md`, `docs/signing.md`, and `docs/development.md`.
 

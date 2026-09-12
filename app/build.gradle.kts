@@ -32,8 +32,8 @@ android {
         applicationId = "org.radilabs.weather"
         minSdk = 29
         targetSdk = 35
-        versionCode = 6
-        versionName = "0.1.0"
+        versionCode = 7
+        versionName = "0.1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -101,7 +101,7 @@ tasks.register("prepareReleaseArtifact") {
         val apk = file("build/outputs/apk/release/app-release.apk")
         val dist = rootProject.file("dist")
         dist.mkdirs()
-        val named = File(dist, "weather-v0.1.0.apk")
+        val named = File(dist, "weather-v0.1.1.apk")
         apk.copyTo(named, overwrite = true)
         val sha = providers.exec {
             commandLine("sha256sum", named.absolutePath)

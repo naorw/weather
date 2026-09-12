@@ -2,6 +2,8 @@
 
 Phase 4 map instrument. Not a GIS product. Not observed weather radar.
 
+User-facing names (Stage 1 Phase 0): bottom nav **Map**, screen header **WX MAP**. Overlay controls remain `PRECIP MAP` and `CLOUD COVER`.
+
 ## Map library
 
 **MapLibre Native Android** (`org.maplibre.gl:android-sdk`). BSD-2-Clause. No Google Play Services. No WebView.

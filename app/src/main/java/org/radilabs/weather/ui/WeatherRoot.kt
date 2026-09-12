@@ -48,8 +48,10 @@ import org.radilabs.weather.places.Place
 import org.radilabs.weather.places.PlaceSource
 import org.radilabs.weather.places.placeFromCoordinates
 import org.radilabs.weather.session.RefreshTrigger
+import org.radilabs.weather.session.SessionPlacePolicy
 import org.radilabs.weather.session.SessionView
 import org.radilabs.weather.session.WeatherSession
+import org.radilabs.weather.session.resolveStartupPlace
 import org.radilabs.weather.ui.cities.CitiesScreen
 import org.radilabs.weather.ui.radar.RadarScreen
 import org.radilabs.weather.ui.settings.SettingsScreen
@@ -140,6 +142,7 @@ fun WeatherRoot(
     }
 
     fun select(place: Place, save: Boolean) {
+        SessionPlacePolicy.markManualChoice()
         val chosen = if (save) session.save(place) else session.activate(place)
         results = emptyList()
         citiesStatus = ""
@@ -158,13 +161,42 @@ fun WeatherRoot(
         }
     }
 
-    var firstToday by remember { mutableStateOf(true) }
-    LaunchedEffect(dest) {
-        if (dest == Dest.Today) {
-            val trigger = if (firstToday) RefreshTrigger.Startup else RefreshTrigger.Navigation
-            firstToday = false
-            refresh(session.active(), trigger)
+    var skipFirstTodayRefresh by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        val startupGen = SessionPlacePolicy.tryBeginColdStart()
+        if (startupGen == null) {
+            refresh(session.active(), RefreshTrigger.Navigation)
+            return@LaunchedEffect
         }
+        try {
+            val previous = session.active()
+            val startup = resolveStartupPlace(
+                hasPermission = locator.hasPermission(),
+                previous = previous,
+                currentCoordinates = { locator.currentCoordinates() },
+                reverse = { hint -> withContext(Dispatchers.IO) { session.reverse(hint) } },
+                activate = { place ->
+                    if (SessionPlacePolicy.hasManualChoice()) session.active() else session.activate(place)
+                },
+            )
+            if (!SessionPlacePolicy.hasManualChoice()) {
+                refresh(startup.place, RefreshTrigger.Startup)
+            }
+            SessionPlacePolicy.completeColdStart(startupGen)
+        } catch (cancelled: CancellationException) {
+            SessionPlacePolicy.abortColdStart(startupGen)
+            throw cancelled
+        } catch (_: Exception) {
+            SessionPlacePolicy.completeColdStart(startupGen)
+        }
+    }
+    LaunchedEffect(dest) {
+        if (dest != Dest.Today) return@LaunchedEffect
+        if (skipFirstTodayRefresh) {
+            skipFirstTodayRefresh = false
+            return@LaunchedEffect
+        }
+        refresh(session.active(), RefreshTrigger.Navigation)
     }
 
     DisposableEffect(context) {
