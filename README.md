@@ -42,6 +42,21 @@ Wx Weather is deliberately boring about your data:
 
 Two network facts worth knowing: the basemap style and tiles come from OpenFreeMap, and the weather data and overlay tiles come from OpenWeather. Those providers see the viewport of any request you make. The app sends nothing to a Radilabs server.
 
+## Getting an OpenWeather API key
+
+Wx Weather needs an OpenWeather API key. The free plan is enough for everything the app does.
+
+1. Sign up at [openweathermap.org](https://home.openweathermap.org/users/sign_up).
+2. Your key (APPID) is emailed to you on confirmation, and is always listed on your [account's API keys page](https://home.openweathermap.org/api_keys).
+3. New keys can take a short while before they are accepted. If you see an auth error right after signing up, wait a few minutes and try again.
+4. Open **Settings** in Wx Weather, paste the key, and tap **Save**.
+
+The app confirms with `Configured · ••••` plus the last four characters. **Remove** clears it. No key is bundled in the APK.
+
+Until a key is saved, Today and Cities cannot load data and the map overlays stay off, with a note telling you so. The basemap itself still renders without a key.
+
+The free plan includes the Current Weather API, the 3-hour forecast for 5 days, Air Pollution, Weather Maps, and Geocoding, which is exactly the set this app uses. One refresh of today's conditions issues three calls (current, forecast, air). Rate limits are account-wide, not per key, and are published by OpenWeather on your account.
+
 ## Weather data
 
 The current implementation uses the OpenWeather free APIs for forecast data and map overlays, and OpenStreetMap data through OpenFreeMap for the basemap.
